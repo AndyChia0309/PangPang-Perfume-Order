@@ -428,52 +428,6 @@ main {
   color: var(--color-muted);
 }
 
-/* Modal */
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 10;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background: var(--color-backdrop);
-}
-
-.modal-content {
-  position: relative;
-  width: min(100%, 520px);
-  padding: 32px;
-  border-radius: 8px;
-  background: var(--color-surface);
-  box-shadow: 0 24px 80px var(--color-panel-shadow);
-}
-
-.modal-content h2 {
-  margin: 0 0 12px;
-  color: var(--color-accent);
-}
-
-.modal-content p {
-  margin: 0;
-  color: var(--color-muted);
-  line-height: 1.7;
-}
-
-.modal-close {
-  position: absolute;
-  top: 12px;
-  right: 14px;
-  border: 0;
-  background: transparent;
-  color: var(--color-subtle);
-  font-size: 28px;
-  line-height: 1;
-}
-
-.modal-close:hover {
-  color: var(--color-text);
-}
-
 /* Responsive: compact desktop and landscape tablet */
 @media (min-width: 916px) and (max-width: 1300px) {
   .form-main {
