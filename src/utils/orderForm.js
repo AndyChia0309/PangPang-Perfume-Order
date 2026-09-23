@@ -8,6 +8,7 @@ export const orderFormFields = {
   largeQuantity: "largeQuantity",
   largeQuantityOther: "largeQuantityOther",
   pickupMethod: "pickupMethod",
+  pickupStoreAddress: "pickupStoreAddress",
 };
 
 function getTextValue(formData, fieldName) {
@@ -53,9 +54,17 @@ export function createOrderFromFormData(formData) {
   const phone = getTextValue(formData, orderFormFields.phone);
   const email = getTextValue(formData, orderFormFields.email);
   const instagram = getTextValue(formData, orderFormFields.instagram);
+  const pickupStoreAddress = getTextValue(
+    formData,
+    orderFormFields.pickupStoreAddress,
+  );
 
   if (!customerName || !phone || !email) {
     return { errorMessage: "請填寫姓名、電話與 Email。" };
+  }
+
+  if (!pickupStoreAddress) {
+    return { errorMessage: "請填寫取貨門市地址。" };
   }
 
   return {
@@ -67,6 +76,7 @@ export function createOrderFromFormData(formData) {
       small_qty: smallQty,
       large_qty: largeQty,
       pickup_method: formData.get(orderFormFields.pickupMethod),
+      pickup_store_address: pickupStoreAddress,
     },
   };
 }

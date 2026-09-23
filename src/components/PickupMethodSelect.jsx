@@ -1,8 +1,6 @@
 import { orderFormFields } from "../utils/orderForm";
 
-const pickupMethodOptions = [
-  { value: "超商自取", label: "超商自取" },
-];
+const pickupMethodOptions = [{ value: "超商自取", label: "超商自取" }];
 
 function PickupMethodSelect() {
   return (
@@ -18,6 +16,18 @@ function PickupMethodSelect() {
           </option>
         ))}
       </select>
+
+      <label htmlFor="pickup-store-address" className="pickup-title">
+        取貨門市地址
+      </label>
+
+      <input
+        type="text"
+        id="pickup-store-address"
+        name={orderFormFields.pickupStoreAddress}
+        placeholder="請輸入取貨門市名稱或地址"
+        required
+      />
     </div>
   );
 }
