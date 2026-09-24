@@ -86,7 +86,7 @@
 
 - [x] 首次載入的 JS 有一大半是 supabase-js → `orderService` 改用動態 `import()`，主程式 454KB → 240KB，Supabase（215KB）在送出時才下載（`815deab`）
 - [ ] `OrderForm` 負責太多事，可拆出 `SiteHeader`、`useOrderSubmit`
-- [ ] 步驟設定分散在多處，可改為步驟陣列設定
+- [x] 步驟設定分散在多處 → `OrderForm` 以 `INTRO_STEPS` 陣列描述介紹步驟與按鈕文字，總步數由陣列長度推算，`WizardFooter` 改由 `continueLabel` prop 取得按鈕文字；另在 `.oxlintrc.json` 開啟 `no-undef` 並設定 browser 環境，未定義變數在 lint 階段就會被抓到（`0957895`）
 - [x] 成功視窗缺少 Esc 關閉、`role="dialog"` 與焦點管理 → 改用原生 `<dialog>` + `showModal()`，加上 `aria-labelledby`；Esc、✕、點背景都能關閉，開啟時焦點移到關閉按鈕（`445c5d4`）
 - [x] `utils/orderForm.js` 沒有單元測試 → 加入 Vitest，`orderForm.test.js` 共 9 個測試（`npm test`），並以變異測試確認能抓到錯誤；同時把必填欄位的錯誤訊息拆成姓名／電話／Email 各自提示（`731e4f6`）
 - [x] `productContent.js` 在資料中控制排版 → 改為 `promotion`／`prices`／`notes` 結構，排版交給 `ProductInfo`（`df43903`）
