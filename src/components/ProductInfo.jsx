@@ -1,5 +1,11 @@
 import { productContent } from "../data/productContent";
 
+const detailClassNames = {
+  scent: "text-body font-medium text-brand",
+  note: "max-w-[34ch] break-words text-caption text-ink-subtle",
+  default: "text-body text-ink-muted",
+};
+
 function ProductInfo() {
   return (
     <div>
@@ -13,11 +19,7 @@ function ProductInfo() {
             <div key={`space-${index}`} className="h-5" />
           ) : (
             <p
-              className={
-                detail.variant === "note"
-                  ? "max-w-[34ch] break-words text-caption text-ink-subtle"
-                  : "text-body text-ink-muted"
-              }
+              className={detailClassNames[detail.variant ?? "default"]}
               key={detail.text}
             >
               {detail.text}

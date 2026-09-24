@@ -1,7 +1,6 @@
 import { orderNotice } from "../../data/productContent";
 import { orderFormFields } from "../../utils/orderForm";
 import CustomerFields from "../CustomerFields";
-import InstagramContact from "../InstagramContact";
 import PickupMethodSelect from "../PickupMethodSelect";
 import QuantitySelector from "../QuantitySelector";
 import StepHeader from "./StepHeader";
@@ -40,7 +39,7 @@ function StepOrder({
         <PickupMethodSelect />
       </div>
 
-      <dl className="mt-8 grid gap-1 rounded-lg bg-brand-soft px-5 py-4 text-caption">
+      <dl className="mt-8 grid gap-1 rounded-card bg-brand-soft px-5 py-4 text-caption">
         {orderNotice.map(({ label, text }) => (
           <div key={label} className="flex gap-2">
             <dt className="shrink-0 font-semibold text-brand">{label}</dt>
@@ -52,10 +51,6 @@ function StepOrder({
       {submitError && (
         <p className="mt-6 text-caption text-danger">{submitError}</p>
       )}
-
-      <div className="mt-8">
-        <InstagramContact />
-      </div>
     </div>
   );
 }

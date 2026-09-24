@@ -17,7 +17,7 @@ function StepScent() {
       <div className="mt-8 grid grid-cols-[minmax(0,1fr)_minmax(0,0.6fr)] gap-4 md:grid-cols-2 md:gap-8">
         <ProductInfo />
 
-        <div className="relative overflow-hidden rounded-xl">
+        <div className="relative overflow-hidden rounded-card">
           <img
             className="absolute inset-0 h-full w-full object-contain"
             src={character.src}

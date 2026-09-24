@@ -26,6 +26,11 @@
   --text-eyebrow--line-height: 1.5;
   --text-eyebrow--letter-spacing: 0.18em;
 
+  /* 圓角：輸入框與數量按鈕／按鈕／區塊、圖片與影片 */
+  --radius-field: 0.625rem;
+  --radius-button: 0.75rem;
+  --radius-card: 1.25rem;
+
   --tracking-label: 0.12em;
   --spacing-control: 50px;
   --container-content: 720px;
@@ -93,7 +98,7 @@
 
 /* 表單輸入框與下拉選單共用 */
 @utility field {
-  @apply min-h-control w-full rounded-md border border-line bg-white px-4 py-3 text-body leading-normal text-ink transition-colors duration-200 placeholder:text-ink-subtle hover:border-brand focus:border-brand focus:outline-none;
+  @apply min-h-control w-full rounded-field border border-line bg-white px-4 py-3 text-body leading-normal text-ink transition-colors duration-200 placeholder:text-ink-subtle hover:border-brand focus:border-brand focus:outline-none;
 }
 
 @utility field-label {
@@ -101,7 +106,7 @@
 }
 
 @utility btn {
-  @apply inline-flex items-center gap-1 rounded-lg border border-brand px-6 py-3 text-body leading-normal font-semibold transition-colors duration-200 disabled:opacity-70;
+  @apply inline-flex items-center gap-1 rounded-button border border-brand px-6 py-3 text-body leading-normal font-semibold transition-colors duration-200 disabled:opacity-70;
 }
 
 @utility btn-primary {

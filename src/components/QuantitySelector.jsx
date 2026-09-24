@@ -1,7 +1,7 @@
 const quantityOptions = ["0", "1", "2", "3", "other"];
 
 const optionClassName =
-  "inline-flex min-h-control min-w-control cursor-pointer items-center justify-center rounded-md border border-line bg-white px-3.5 py-3 text-body leading-normal text-ink transition-colors duration-200 has-checked:border-brand has-checked:bg-brand has-checked:text-white has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand";
+  "inline-flex min-h-control min-w-control cursor-pointer items-center justify-center rounded-field border border-line bg-white px-3.5 py-3 text-body leading-normal text-ink transition-colors duration-200 has-checked:border-brand has-checked:bg-brand has-checked:text-white has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand";
 
 function QuantitySelector({
   title,

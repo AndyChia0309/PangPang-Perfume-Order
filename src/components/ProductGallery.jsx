@@ -8,7 +8,7 @@ function ProductGallery({ images }) {
       {images.map((image) => (
         <img
           key={image.src}
-          className="w-full rounded-xl object-cover"
+          className="w-full rounded-card object-cover"
           src={image.src}
           alt={image.alt}
           width={image.width}

@@ -9,7 +9,7 @@ function StepVideo() {
         description="一場結合擴增實境與香氣的沉浸式體驗，點開影片，先感受這趟旅程。"
       />
 
-      <div className="mt-8 aspect-video w-full overflow-hidden rounded-xl bg-black">
+      <div className="mt-8 aspect-video w-full overflow-hidden rounded-card bg-black">
         <iframe
           className="h-full w-full"
           src={brandStory.videoEmbedUrl}

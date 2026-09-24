@@ -2,6 +2,7 @@ import { useState } from "react";
 import brandLogo from "../assets/images/logo.png";
 import { submitOrder } from "../services/orderService";
 import { createOrderFromFormData } from "../utils/orderForm";
+import InstagramContact from "./InstagramContact";
 import StepBrandIntro from "./steps/StepBrandIntro";
 import StepOrder from "./steps/StepOrder";
 import StepScent from "./steps/StepScent";
@@ -65,8 +66,9 @@ function OrderForm({ onSuccess }) {
       className="flex min-h-dvh flex-col"
       onSubmit={handleSubmit}
     >
-      <header className="page-gutter flex items-center py-4">
+      <header className="page-gutter flex items-center justify-between gap-4 py-4">
         <img className="h-8 object-contain lg:h-10 2xl:h-12" src={brandLogo} alt="香水夢遊 Parfum Tournée" />
+        <InstagramContact />
       </header>
 
       <div className="page-gutter flex flex-1 flex-col justify-center">

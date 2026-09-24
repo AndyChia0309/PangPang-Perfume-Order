@@ -7,7 +7,7 @@ function OrderSuccessModal({ onClose }) {
       onClick={onClose}
     >
       <div
-        className="relative my-auto w-full max-w-[520px] rounded-lg bg-white p-8 shadow-[0_24px_80px_rgba(0,0,0,0.18)]"
+        className="relative my-auto w-full max-w-[520px] rounded-card bg-white p-8 shadow-[0_24px_80px_rgba(0,0,0,0.18)]"
         onClick={(event) => event.stopPropagation()}
       >
         <button

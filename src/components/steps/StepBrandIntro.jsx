@@ -20,7 +20,7 @@ function StepBrandIntro() {
       </StepHeader>
 
       <img
-        className="mt-8 w-full rounded-xl object-cover"
+        className="mt-8 w-full rounded-card object-cover"
         src={hero.src}
         alt={hero.alt}
         width={hero.width}
