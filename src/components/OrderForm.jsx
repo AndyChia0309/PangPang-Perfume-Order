@@ -66,15 +66,21 @@ function OrderForm({ onSuccess }) {
       className="flex min-h-dvh flex-col"
       onSubmit={handleSubmit}
     >
-      <header className="page-gutter flex items-center justify-between gap-4 py-4">
+      {/* 左右兩欄等寬，讓中間的作品集提示在畫面正中央 */}
+      <header className="page-gutter grid grid-cols-[1fr_auto_1fr] items-center gap-3 py-4">
         <img
-          className="h-8 w-auto lg:h-10 2xl:h-12"
+          className="h-8 w-auto justify-self-start lg:h-10 2xl:h-12"
           src={brandLogo}
           alt="香水夢遊 Parfum Tournée"
           width={256}
           height={226}
         />
-        <InstagramContact />
+        <p className="rounded-full bg-brand-soft px-3 py-1 text-center text-caption text-brand">
+          目前為作品集展示使用
+        </p>
+        <div className="justify-self-end">
+          <InstagramContact />
+        </div>
       </header>
 
       <div className="page-gutter flex flex-1 flex-col justify-center">
