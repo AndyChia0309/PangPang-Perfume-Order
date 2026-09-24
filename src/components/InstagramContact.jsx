@@ -1,15 +1,16 @@
-import instagramIcon from "../assets/images/instagram-icon.png";
+import InstagramIcon from "./icons/InstagramIcon";
 
 function InstagramContact() {
   return (
     <a
-      className="flex items-center gap-2 text-caption text-ink-muted transition-colors duration-200 hover:text-brand"
+      className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-white transition-colors duration-200 hover:bg-brand-dark"
       href="https://www.instagram.com/parfum_tournee?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
       target="_blank"
       rel="noreferrer"
+      aria-label="透過 Instagram 聯繫香水夢遊"
+      title="若有任何問題都歡迎 IG 聯繫我們"
     >
-      若有任何問題都歡迎 IG 聯繫我們
-      <img src={instagramIcon} alt="" className="size-[30px] shrink-0" />
+      <InstagramIcon className="size-5" aria-hidden="true" />
     </a>
   );
 }
