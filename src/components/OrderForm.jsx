@@ -47,7 +47,6 @@ function OrderForm({ onSuccess }) {
 
     try {
       await submitOrder(order);
-      console.log("訂單送出成功");
       form.reset();
       setSelectedSmallQuantity("0");
       setSelectedLargeQuantity("0");
