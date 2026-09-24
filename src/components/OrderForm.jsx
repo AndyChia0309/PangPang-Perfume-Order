@@ -9,7 +9,13 @@ import StepScent from "./steps/StepScent";
 import StepVideo from "./steps/StepVideo";
 import WizardFooter from "./WizardFooter";
 
-const TOTAL_STEPS = 4;
+const INTRO_STEPS = [
+  { Component: StepBrandIntro, nextLabel: "繼續" },
+  { Component: StepVideo, nextLabel: "繼續" },
+  { Component: StepScent, nextLabel: "前往購買" },
+];
+
+const TOTAL_STEPS = INTRO_STEPS.length + 1;
 
 function OrderForm({ onSuccess }) {
   const [currentStep, setCurrentStep] = useState(1);
@@ -60,11 +66,11 @@ function OrderForm({ onSuccess }) {
     }
   }
 
+  const introStep = INTRO_STEPS[currentStep - 1];
+  const isOrderStep = currentStep === TOTAL_STEPS;
+
   return (
-    <form
-      className="flex min-h-dvh flex-col"
-      onSubmit={handleSubmit}
-    >
+    <form className="flex min-h-dvh flex-col" onSubmit={handleSubmit}>
       {/* 左右兩欄等寬，讓中間的作品集提示在畫面正中央 */}
       <header className="page-gutter grid grid-cols-[1fr_auto_1fr] items-center gap-3 py-4">
         <img
@@ -84,14 +90,10 @@ function OrderForm({ onSuccess }) {
 
       <div className="page-gutter flex flex-1 flex-col justify-center">
         <div className="mx-auto w-full max-w-content py-6 md:py-10 lg:py-14">
-          {currentStep === 1 && <StepBrandIntro />}
-
-          {currentStep === 2 && <StepVideo />}
-
-          {currentStep === 3 && <StepScent />}
+          {introStep && <introStep.Component />}
 
           {/* 訂購表單保持掛載、只用 hidden 隱藏，返回上一步再回來時已填的欄位才不會被清空 */}
-          <div hidden={currentStep !== 4}>
+          <div hidden={!isOrderStep}>
             <StepOrder
               selectedSmallQuantity={selectedSmallQuantity}
               selectedLargeQuantity={selectedLargeQuantity}
@@ -109,6 +111,7 @@ function OrderForm({ onSuccess }) {
         onBack={goToPreviousStep}
         onContinue={goToNextStep}
         isSubmitting={isSubmitting}
+        continueLabel={introStep?.nextLabel}
       />
     </form>
   );

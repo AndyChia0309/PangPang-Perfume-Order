@@ -6,10 +6,9 @@ function WizardFooter({
   onBack,
   onContinue,
   isSubmitting,
+  continueLabel,
 }) {
   const isLastStep = currentStep === totalSteps;
-  // 進入訂購表單前的那一步，按鈕文案改為「前往購買」
-  const continueLabel = currentStep === totalSteps - 1 ? "前往購買" : "繼續";
   const progressPercent = (currentStep / totalSteps) * 100;
 
   return (
