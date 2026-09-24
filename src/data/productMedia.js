@@ -1,7 +1,7 @@
-import characterImage from "../assets/images/colleen.png";
-import headerImage from "../assets/images/header.png";
-import galleryImage1 from "../assets/images/product-1.jpg";
-import galleryImage2 from "../assets/images/product-2.jpg";
+import characterImage from "../assets/images/colleen.webp";
+import headerImage from "../assets/images/header.webp";
+import galleryImage1 from "../assets/images/product-1.webp";
+import galleryImage2 from "../assets/images/product-2.webp";
 
 export const productMedia = {
   hero: {

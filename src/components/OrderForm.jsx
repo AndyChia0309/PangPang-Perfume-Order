@@ -1,5 +1,5 @@
 import { useState } from "react";
-import brandLogo from "../assets/images/logo.png";
+import brandLogo from "../assets/images/logo.svg";
 import { submitOrder } from "../services/orderService";
 import { createOrderFromFormData } from "../utils/orderForm";
 import InstagramContact from "./InstagramContact";
@@ -67,7 +67,13 @@ function OrderForm({ onSuccess }) {
       onSubmit={handleSubmit}
     >
       <header className="page-gutter flex items-center justify-between gap-4 py-4">
-        <img className="h-8 object-contain lg:h-10 2xl:h-12" src={brandLogo} alt="香水夢遊 Parfum Tournée" />
+        <img
+          className="h-8 w-auto lg:h-10 2xl:h-12"
+          src={brandLogo}
+          alt="香水夢遊 Parfum Tournée"
+          width={256}
+          height={226}
+        />
         <InstagramContact />
       </header>
 
