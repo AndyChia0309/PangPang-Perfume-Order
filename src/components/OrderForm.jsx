@@ -91,7 +91,8 @@ function OrderForm({ onSuccess }) {
 
           {currentStep === 3 && <StepScent />}
 
-          {currentStep === 4 && (
+          {/* 訂購表單保持掛載、只用 hidden 隱藏，返回上一步再回來時已填的欄位才不會被清空 */}
+          <div hidden={currentStep !== 4}>
             <StepOrder
               selectedSmallQuantity={selectedSmallQuantity}
               selectedLargeQuantity={selectedLargeQuantity}
@@ -99,7 +100,7 @@ function OrderForm({ onSuccess }) {
               onLargeQuantityChange={setSelectedLargeQuantity}
               submitError={submitError}
             />
-          )}
+          </div>
         </div>
       </div>
 
