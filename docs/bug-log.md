@@ -89,6 +89,6 @@
 - [ ] 步驟設定分散在多處，可改為步驟陣列設定
 - [ ] 成功視窗缺少 Esc 關閉、`role="dialog"` 與焦點管理
 - [ ] `utils/orderForm.js` 沒有單元測試
-- [ ] `productContent.js` 在資料中控制排版（`type: "space"`、`variant`）
-- [ ] 移除 `console.log("訂單送出成功")`
-- [ ] `ProductInfo` 的標題用 `<h1>`，和步驟標題重複，應改為 `<h2>`
+- [x] `productContent.js` 在資料中控制排版 → 改為 `promotion`／`prices`／`notes` 結構，排版交給 `ProductInfo`（`df43903`）
+- [x] 移除 `console.log("訂單送出成功")`（`df43903`）
+- [x] `ProductInfo` 的標題 `<h1>` 改為 `<h2>`（`df43903`）
