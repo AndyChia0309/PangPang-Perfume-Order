@@ -1,4 +1,7 @@
-const quantityOptions = ["0", "1", "2", "3"];
+const quantityOptions = ["0", "1", "2", "3", "other"];
+
+const optionClassName =
+  "inline-flex min-h-control min-w-control cursor-pointer items-center justify-center rounded-md border border-line bg-white px-3.5 py-3 text-body leading-normal text-ink transition-colors duration-200 has-checked:border-brand has-checked:bg-brand has-checked:text-white has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand";
 
 function QuantitySelector({
   title,
@@ -8,37 +11,27 @@ function QuantitySelector({
   onChange,
 }) {
   return (
-    <div className="quantity-selector">
-      <p className="quantity-title">{title}</p>
+    <div className="flex flex-col gap-2">
+      <p className="field-label">{title}</p>
 
-      <div className="quantity-options">
+      <div className="flex flex-wrap gap-2">
         {quantityOptions.map((option) => (
-          <label key={option}>
+          <label key={option} className={optionClassName}>
             <input
+              className="sr-only"
               type="radio"
               name={fieldName}
               value={option}
               checked={value === option}
               onChange={(event) => onChange(event.target.value)}
             />
-            {option}
+            {option === "other" ? "其他" : option}
           </label>
         ))}
 
-        <label>
-          <input
-            type="radio"
-            name={fieldName}
-            value="other"
-            checked={value === "other"}
-            onChange={(event) => onChange(event.target.value)}
-          />
-          其他
-        </label>
-
         {value === "other" && (
           <input
-            className="other-quantity-input"
+            className="field w-[88px] px-3"
             type="number"
             name={otherFieldName}
             inputMode="numeric"

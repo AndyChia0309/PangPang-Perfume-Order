@@ -41,16 +41,19 @@ const customerFields = [
 
 function CustomerFields() {
   return (
-    <div className="customer-fields">
+    <>
       {customerFields.map(({ label, ...inputProps }) => (
-        <div className="customer-field" key={inputProps.name}>
-          <label htmlFor={inputProps.id} className="field-title">
+        <div className="flex flex-col gap-2" key={inputProps.name}>
+          <label htmlFor={inputProps.id} className="field-label">
             {label}
           </label>
-          <input {...inputProps} />
+          <input
+            {...inputProps}
+            className="field"
+          />
         </div>
       ))}
-    </div>
+    </>
   );
 }
 

@@ -6,14 +6,16 @@ import galleryImage2 from "../assets/images/product-2.jpg";
 export const productMedia = {
   hero: {
     src: headerImage,
-    alt: "白日慵懶香水預購主視覺",
+    alt: "白日慵懶香水訂購主視覺",
+    width: 2000,
+    height: 620,
   },
   character: {
     src: characterImage,
     alt: "白日慵懶香水商品照",
   },
   galleryImages: [
-    { src: galleryImage1, alt: "香水商品展示 1", width: 4032, height: 3024 },
-    { src: galleryImage2, alt: "香水商品展示 2", width: 3145, height: 2359 },
+    { src: galleryImage1, alt: "香水商品展示 1", width: 1200, height: 900 },
+    { src: galleryImage2, alt: "香水商品展示 2", width: 1200, height: 900 },
   ],
 };

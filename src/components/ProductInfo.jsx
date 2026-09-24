@@ -2,17 +2,21 @@ import { productContent } from "../data/productContent";
 
 function ProductInfo() {
   return (
-    <>
-      <h1>{productContent.title}</h1>
+    <div>
+      <h1 className="mb-4 text-heading font-semibold text-brand">
+        {productContent.title}
+      </h1>
 
-      <div className="product-details">
+      <div>
         {productContent.details.map((detail, index) =>
           detail.type === "space" ? (
-            <div key={`space-${index}`} className="product-detail-space" />
+            <div key={`space-${index}`} className="h-5" />
           ) : (
             <p
               className={
-                detail.variant === "note" ? "product-detail-note" : ""
+                detail.variant === "note"
+                  ? "max-w-[34ch] break-words text-caption text-ink-subtle"
+                  : "text-body text-ink-muted"
               }
               key={detail.text}
             >
@@ -21,7 +25,7 @@ function ProductInfo() {
           ),
         )}
       </div>
-    </>
+    </div>
   );
 }
 
