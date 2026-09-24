@@ -59,8 +59,16 @@ export function createOrderFromFormData(formData) {
     orderFormFields.pickupStoreAddress,
   );
 
-  if (!customerName || !phone || !email) {
-    return { errorMessage: "請填寫姓名、電話與 Email。" };
+  if (!customerName) {
+    return { errorMessage: "請填寫姓名。" };
+  }
+
+  if (!phone) {
+    return { errorMessage: "請填寫電話。" };
+  }
+
+  if (!email) {
+    return { errorMessage: "請填寫Email。" };
   }
 
   if (!pickupStoreAddress) {
