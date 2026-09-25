@@ -1,13 +1,11 @@
 import { useState } from "react";
-import brandLogo from "../assets/images/logo.svg";
-import { submitOrder } from "../services/orderService";
-import { createOrderFromFormData } from "../utils/orderForm";
-import InstagramContact from "./InstagramContact";
+import SiteHeader from "./SiteHeader";
 import StepBrandIntro from "./steps/StepBrandIntro";
 import StepOrder from "./steps/StepOrder";
 import StepScent from "./steps/StepScent";
 import StepVideo from "./steps/StepVideo";
 import WizardFooter from "./WizardFooter";
+import { useOrderSubmit } from "../hooks/useOrderSubmit";
 
 const INTRO_STEPS = [
   { Component: StepBrandIntro, nextLabel: "繼續" },
@@ -19,8 +17,6 @@ const TOTAL_STEPS = INTRO_STEPS.length + 1;
 
 function OrderForm({ onSuccess }) {
   const [currentStep, setCurrentStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState("");
   const [selectedSmallQuantity, setSelectedSmallQuantity] = useState("0");
   const [selectedLargeQuantity, setSelectedLargeQuantity] = useState("0");
 
@@ -34,60 +30,21 @@ function OrderForm({ onSuccess }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault();
-    if (isSubmitting) return;
-
-    setIsSubmitting(true);
-    setSubmitError("");
-
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-    const { order, errorMessage } = createOrderFromFormData(formData);
-
-    if (errorMessage) {
-      setSubmitError(errorMessage);
-      setIsSubmitting(false);
-      return;
-    }
-
-    try {
-      await submitOrder(order);
-      form.reset();
+  const { isSubmitting, submitError, handleSubmit } = useOrderSubmit({
+    onSuccess() {
       setSelectedSmallQuantity("0");
       setSelectedLargeQuantity("0");
       setCurrentStep(1);
       onSuccess();
-    } catch (error) {
-      console.error("訂單送出失敗", error);
-      setSubmitError("訂單送出失敗，請稍後再試，或透過 IG 與我們聯繫。");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+    },
+  });
 
   const introStep = INTRO_STEPS[currentStep - 1];
   const isOrderStep = currentStep === TOTAL_STEPS;
 
   return (
     <form className="flex min-h-dvh flex-col" onSubmit={handleSubmit}>
-      {/* 左右兩欄等寬，讓中間的作品集提示在畫面正中央 */}
-      <header className="page-gutter grid grid-cols-[1fr_auto_1fr] items-center gap-3 py-4">
-        <img
-          className="h-8 w-auto justify-self-start lg:h-10 2xl:h-12"
-          src={brandLogo}
-          alt="香水夢遊 Parfum Tournée"
-          width={256}
-          height={226}
-        />
-        <p className="rounded-full bg-brand-soft px-3 py-1 text-center text-caption text-brand">
-          目前為作品集展示使用
-        </p>
-        <div className="justify-self-end">
-          <InstagramContact />
-        </div>
-      </header>
-
+      <SiteHeader />
       <div className="page-gutter flex flex-1 flex-col justify-center">
         <div className="mx-auto w-full max-w-content py-6 md:py-10 lg:py-14">
           {introStep && <introStep.Component />}
