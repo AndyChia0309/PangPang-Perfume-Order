@@ -82,10 +82,10 @@
 
 ## 架構改善清單
 
-來自 2026-09-24 的程式架構檢查。不算 bug，但會影響維護性或效能：
+來自 2026-09-24 的程式架構檢查。不算 bug，但會影響維護性或效能。**2026-09-25 全數完成。**
 
 - [x] 首次載入的 JS 有一大半是 supabase-js → `orderService` 改用動態 `import()`，主程式 454KB → 240KB，Supabase（215KB）在送出時才下載（`815deab`）
-- [ ] `OrderForm` 負責太多事，可拆出 `SiteHeader`、`useOrderSubmit`
+- [x] `OrderForm` 負責太多事 → 拆出 `SiteHeader` 元件與 `hooks/useOrderSubmit` 自訂 Hook，送出成功後的重設由 `OrderForm` 透過 `onSuccess` 決定；`OrderForm.jsx` 由 118 行減為 77 行（`a37636d`）
 - [x] 步驟設定分散在多處 → `OrderForm` 以 `INTRO_STEPS` 陣列描述介紹步驟與按鈕文字，總步數由陣列長度推算，`WizardFooter` 改由 `continueLabel` prop 取得按鈕文字；另在 `.oxlintrc.json` 開啟 `no-undef` 並設定 browser 環境，未定義變數在 lint 階段就會被抓到（`0957895`）
 - [x] 成功視窗缺少 Esc 關閉、`role="dialog"` 與焦點管理 → 改用原生 `<dialog>` + `showModal()`，加上 `aria-labelledby`；Esc、✕、點背景都能關閉，開啟時焦點移到關閉按鈕（`445c5d4`）
 - [x] `utils/orderForm.js` 沒有單元測試 → 加入 Vitest，`orderForm.test.js` 共 9 個測試（`npm test`），並以變異測試確認能抓到錯誤；同時把必填欄位的錯誤訊息拆成姓名／電話／Email 各自提示（`731e4f6`）
