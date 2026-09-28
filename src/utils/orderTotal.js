@@ -8,3 +8,9 @@ export function calculateOrderTotal(smallQty, largeQty) {
 
   return { subtotal, shippingFee, total };
 }
+
+export function toQuantity(selected, other) {
+  const value = selected === "other" ? other : selected;
+  const num = Number(value);
+  return Number.isInteger(num) && num > 0 ? num : 0;
+}
