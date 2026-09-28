@@ -19,6 +19,8 @@ function OrderForm({ onSuccess }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSmallQuantity, setSelectedSmallQuantity] = useState("0");
   const [selectedLargeQuantity, setSelectedLargeQuantity] = useState("0");
+  const [smallOtherQuantity, setSmallOtherQuantity] = useState("");
+  const [largeOtherQuantity, setLargeOtherQuantity] = useState("");
 
   function goToPreviousStep() {
     setCurrentStep((step) => Math.max(1, step - 1));
@@ -34,6 +36,8 @@ function OrderForm({ onSuccess }) {
     onSuccess() {
       setSelectedSmallQuantity("0");
       setSelectedLargeQuantity("0");
+      setSmallOtherQuantity("");
+      setLargeOtherQuantity("");
       setCurrentStep(1);
       onSuccess();
     },
@@ -53,9 +57,13 @@ function OrderForm({ onSuccess }) {
           <div hidden={!isOrderStep}>
             <StepOrder
               selectedSmallQuantity={selectedSmallQuantity}
-              selectedLargeQuantity={selectedLargeQuantity}
               onSmallQuantityChange={setSelectedSmallQuantity}
+              smallOtherQuantity={smallOtherQuantity}
+              onSmallOtherQuantityChange={setSmallOtherQuantity}
+              selectedLargeQuantity={selectedLargeQuantity}
               onLargeQuantityChange={setSelectedLargeQuantity}
+              largeOtherQuantity={largeOtherQuantity}
+              onLargeOtherQuantityChange={setLargeOtherQuantity}
               submitError={submitError}
             />
           </div>

@@ -5,8 +5,7 @@ const quantityOptions = ["0", "1", "2", "3", "other"];
 // 5 個選項等寬排成一列、寬度不足時一起縮小，避免「其他」輸入框被擠到下一行
 const slotClassName = "min-w-0 max-w-16 flex-1";
 
-const optionClassName =
-  `${slotClassName} inline-flex min-h-control cursor-pointer items-center justify-center rounded-field border border-line bg-white px-2 py-3 text-body leading-normal text-ink transition-colors duration-200 has-checked:border-brand has-checked:bg-brand has-checked:text-white has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand`;
+const optionClassName = `${slotClassName} inline-flex min-h-control cursor-pointer items-center justify-center rounded-field border border-line bg-white px-2 py-3 text-body leading-normal text-ink transition-colors duration-200 has-checked:border-brand has-checked:bg-brand has-checked:text-white has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand`;
 
 function QuantitySelector({
   title,
@@ -14,6 +13,8 @@ function QuantitySelector({
   otherFieldName,
   value,
   onChange,
+  otherValue,
+  onOtherChange,
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -49,6 +50,8 @@ function QuantitySelector({
                   aria-label="其他數量"
                   required
                   autoFocus
+                  value={otherValue}
+                  onChange={(event) => onOtherChange(event.target.value)}
                 />
               </Fragment>
             );

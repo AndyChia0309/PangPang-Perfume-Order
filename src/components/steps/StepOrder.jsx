@@ -10,6 +10,10 @@ function StepOrder({
   selectedLargeQuantity,
   onSmallQuantityChange,
   onLargeQuantityChange,
+  smallOtherQuantity,
+  largeOtherQuantity,
+  onSmallOtherQuantityChange,
+  onLargeOtherQuantityChange,
   submitError,
 }) {
   return (
@@ -28,6 +32,8 @@ function StepOrder({
           otherFieldName={orderFormFields.smallQuantityOther}
           value={selectedSmallQuantity}
           onChange={onSmallQuantityChange}
+          otherValue={smallOtherQuantity}
+          onOtherChange={onSmallOtherQuantityChange}
         />
         <QuantitySelector
           title="請選擇大瓶香水（7 mL）購買數量"
@@ -35,6 +41,8 @@ function StepOrder({
           otherFieldName={orderFormFields.largeQuantityOther}
           value={selectedLargeQuantity}
           onChange={onLargeQuantityChange}
+          otherValue={largeOtherQuantity}
+          onOtherChange={onLargeOtherQuantityChange}
         />
         <PickupMethodSelect />
       </div>
