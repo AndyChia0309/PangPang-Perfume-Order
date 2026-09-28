@@ -8,10 +8,9 @@ function PickupMethodSelect() {
     <>
       <div className="flex flex-col gap-2">
         <label htmlFor="pickup-method" className="field-label">
-          領取地點
+          取貨方式
         </label>
 
-        {/* 隱藏瀏覽器預設箭頭，改用 lucide icon；展開後的選單仍是系統原生，手機上操作較順手 */}
         <div className="relative">
           <select
             name={orderFormFields.pickupMethod}

@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* 全站設計系統：顏色、字級、尺寸統一在這裡調整 */
 @theme {
   --font-sans: "Poppins", "Noto Sans TC", system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -26,17 +25,17 @@
   --text-eyebrow--line-height: 1.5;
   --text-eyebrow--letter-spacing: 0.18em;
 
-  /* 圓角：輸入框與數量按鈕／按鈕／區塊、圖片與影片 */
   --radius-field: 0.625rem;
   --radius-button: 0.75rem;
   --radius-card: 1.25rem;
+
+  --shadow-card: 0 1px 2px rgb(36 31 31 / 0.04), 0 8px 24px rgb(36 31 31 / 0.06);
 
   --tracking-label: 0.12em;
   --spacing-control: 50px;
   --container-content: 720px;
 }
 
-/* 大螢幕時內容寬度與字級一起放大（斷點沿用 Tailwind 的 md / lg / xl / 2xl） */
 :root {
   @variant md {
     --text-title: 2.125rem;
@@ -70,7 +69,6 @@
   }
 }
 
-/* Tailwind preflight 已處理 box-sizing、margin、字型繼承等，這裡只補它沒有的部分 */
 @layer base {
   body {
     background-color: #fff;
@@ -96,9 +94,12 @@
   @apply px-4 md:px-10;
 }
 
-/* 表單輸入框與下拉選單共用 */
 @utility field {
   @apply min-h-control w-full rounded-field border border-line bg-white px-4 py-3 text-body leading-normal text-ink transition-colors duration-200 placeholder:text-ink-subtle hover:border-brand focus:border-brand focus:outline-none;
+}
+
+@utility card {
+  @apply rounded-card border border-line bg-white shadow-card;
 }
 
 @utility field-label {
