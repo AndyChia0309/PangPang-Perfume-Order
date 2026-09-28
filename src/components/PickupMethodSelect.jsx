@@ -8,7 +8,7 @@ function PickupMethodSelect() {
     <>
       <div className="flex flex-col gap-2">
         <label htmlFor="pickup-method" className="field-label">
-          取貨方式
+          收件方式
         </label>
 
         <div className="relative">
@@ -31,14 +31,14 @@ function PickupMethodSelect() {
 
       <div className="flex flex-col gap-2">
         <label htmlFor="pickup-store-address" className="field-label">
-          取貨門市地址
+          收件門市地址
         </label>
 
         <input
           type="text"
           id="pickup-store-address"
           name={orderFormFields.pickupStoreAddress}
-          placeholder="請輸入取貨門市名稱或地址"
+          placeholder="請輸入收件門市名稱或地址"
           required
           className="field"
         />
