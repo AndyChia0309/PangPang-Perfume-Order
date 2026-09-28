@@ -9,6 +9,10 @@ export const orderFormFields = {
   largeQuantityOther: "largeQuantityOther",
   pickupMethod: "pickupMethod",
   pickupStoreAddress: "pickupStoreAddress",
+  recipientName: "recipientName",
+  recipientPhone: "recipientPhone",
+  note: "note",
+  privacyAgreed: "privacyAgreed",
 };
 
 function getTextValue(formData, fieldName) {
@@ -58,6 +62,10 @@ export function createOrderFromFormData(formData) {
     formData,
     orderFormFields.pickupStoreAddress,
   );
+  const recipientName = getTextValue(formData, orderFormFields.recipientName);
+  const recipientPhone = getTextValue(formData, orderFormFields.recipientPhone);
+  const note = getTextValue(formData, orderFormFields.note);
+  const privacyAgreed = formData.get(orderFormFields.privacyAgreed) === "on";
 
   if (!customerName) {
     return { errorMessage: "請填寫姓名。" };
@@ -72,7 +80,11 @@ export function createOrderFromFormData(formData) {
   }
 
   if (!pickupStoreAddress) {
-    return { errorMessage: "請填寫取貨門市地址。" };
+    return { errorMessage: "請填寫收件門市地址。" };
+  }
+
+  if (!privacyAgreed) {
+    return { errorMessage: "請同意隱私權政策。" };
   }
 
   return {
@@ -85,6 +97,10 @@ export function createOrderFromFormData(formData) {
       large_qty: largeQty,
       pickup_method: formData.get(orderFormFields.pickupMethod),
       pickup_store_address: pickupStoreAddress,
+      recipient_name: recipientName || customerName,
+      recipient_phone: recipientPhone || phone,
+      note,
+      privacy_agreed: privacyAgreed,
     },
   };
 }

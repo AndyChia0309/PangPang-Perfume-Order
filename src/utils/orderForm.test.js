@@ -11,11 +11,13 @@ function buildFormData(overrides = {}) {
     largeQuantity: "0",
     pickupMethod: "超商自取",
     pickupStoreAddress: "7-11 中壢門市",
+    privacyAgreed: "on",
     ...overrides,
   };
 
   const formData = new FormData();
   for (const [name, value] of Object.entries(fields)) {
+    if (value === undefined) continue;
     formData.set(name, value);
   }
   return formData;
@@ -35,6 +37,10 @@ describe("createOrderFromFormData", () => {
       large_qty: 0,
       pickup_method: "超商自取",
       pickup_store_address: "7-11 中壢門市",
+      recipient_name: "王小明",
+      recipient_phone: "0912345678",
+      note: "",
+      privacy_agreed: true,
     });
   });
 
@@ -95,16 +101,38 @@ describe("createOrderFromFormData", () => {
       buildFormData({ pickupStoreAddress: "" }),
     );
 
-    expect(errorMessage).toBe("請填寫取貨門市地址。");
+    expect(errorMessage).toBe("請填寫收件門市地址。");
     expect(order).toBeUndefined();
   });
 
   it("姓名前後有空白時會自動去掉", () => {
     const { order, errorMessage } = createOrderFromFormData(
-        buildFormData({customerName: "王小明    "})
+      buildFormData({ customerName: "王小明    " }),
     );
 
     expect(errorMessage).toBeUndefined();
     expect(order.customer_name).toBe("王小明");
+  });
+
+  it("有填收件人時使用收件人資料", () => {
+    const { order, errorMessage } = createOrderFromFormData(
+      buildFormData({
+        recipientName: "李小華",
+        recipientPhone: "0987654321",
+      }),
+    );
+
+    expect(errorMessage).toBeUndefined();
+    expect(order.recipient_name).toBe("李小華");
+    expect(order.recipient_phone).toBe("0987654321");
+  });
+
+  it("未勾選隱私權同意時回傳錯誤", () => {
+    const { order, errorMessage } = createOrderFromFormData(
+      buildFormData({ privacyAgreed: undefined }),
+    );
+
+    expect(errorMessage).toBe("請同意隱私權政策。");
+    expect(order).toBeUndefined();
   });
 });
