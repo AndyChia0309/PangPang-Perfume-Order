@@ -21,7 +21,7 @@
 | B13 | 新增 Worker 檔案後 build 失敗、本機 API 全部回 500 | 程式 | ✅ 已修正 | `25cf5f7` |
 | B14 | 在 Cloudflare 後台設定的 secret 沒有生效 | 部署 | ✅ 已修正 | 部署設定 |
 | B15 | 同一個 Turnstile token 可以重複通過驗證 | 安全 | ✅ 已修正 | `3a0dced` |
-| B16 | Worker 呼叫 EmailJS 寄信失敗，顧客與店家都沒收到信 | 串接 | ✅ 已修正 | 本次 commit |
+| B16 | Worker 呼叫 EmailJS 寄信失敗，顧客與店家都沒收到信 | 串接 | ✅ 已修正 | `df32925` |
 
 ## 已修正
 
@@ -30,7 +30,7 @@
 - **症狀：** 本機下單成功、訂單已寫入 Supabase，但兩個信箱都沒有收到信。
 - **原因：** 有兩個問題。① EmailJS 預設只接受瀏覽器發出的請求，Worker 呼叫時回傳 `403 API access from non-browser environments is currently disabled`。② EmailJS 的網站也在 Cloudflare 後面，沒有 `User-Agent` 或看起來像腳本的請求可能被擋下（`error code: 1010`）。寄信錯誤被 `try/catch` 接住，所以訂單仍然成功，只是沒有寄出信件。
 - **修正：** 在 EmailJS **Account → Security** 開啟非瀏覽器應用程式的 API 存取；`worker/email.js` 呼叫 EmailJS 時帶上 `User-Agent: pangpang-order-worker/1.0`。
-- **狀態：** 已修正（本次 commit）。
+- **狀態：** 已修正（`df32925`）。
 
 ### B15 同一個 Turnstile token 可以重複通過驗證
 
@@ -162,8 +162,8 @@
 2026-09-29 決定：不做會員登入，訂單資訊以 Email 確認信提供給顧客。目前沒有自有網域，採用 **EmailJS + 店家 Gmail** 寄信（免費方案每月約 200 封）；日後若購買網域，可改用 Cloudflare Email Service。
 
 - [x] **E1 EmailJS 設定**：連結 Gmail、建立「顧客確認信」與「新訂單通知」兩個範本、開啟非瀏覽器 API 存取
-- [x] **E2 Worker 寄信**：訂單寫入成功後寄出兩封信，寄信失敗不影響下單（`ctx.waitUntil`）；`worker/email.js`，兩封信間隔 1 秒以符合 EmailJS 每秒 1 次的限制（本次 commit）
-- [ ] **E3 部署與測試**：設定正式環境 secret、成功視窗文案改為「確認信已寄到您的 Email」
+- [x] **E2 Worker 寄信**：訂單寫入成功後寄出兩封信，寄信失敗不影響下單（`ctx.waitUntil`）；`worker/email.js`，兩封信間隔 1 秒以符合 EmailJS 每秒 1 次的限制（`df32925`）
+- [x] **E3 部署與測試**：設定正式環境 secret、成功視窗文案改為「確認信已寄到您的 Email」；正式網站下單後，顧客與店家皆收到信（`df32925`）
 
 ## 架構改善清單
 
