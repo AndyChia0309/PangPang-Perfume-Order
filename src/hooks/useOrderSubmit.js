@@ -26,7 +26,7 @@ export function useOrderSubmit({ onSuccess }) {
     try {
       await submitOrder(order);
       form.reset();
-      onSuccess();
+      onSuccess(order);
     } catch (error) {
       console.error("訂單送出失敗", error);
       setSubmitError("訂單送出失敗，請稍後再試，或透過 IG 與我們聯繫。");

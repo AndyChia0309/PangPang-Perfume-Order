@@ -33,13 +33,13 @@ function OrderForm({ onSuccess }) {
   }
 
   const { isSubmitting, submitError, handleSubmit } = useOrderSubmit({
-    onSuccess() {
+    onSuccess(order) {
       setSelectedSmallQuantity("0");
       setSelectedLargeQuantity("0");
       setSmallOtherQuantity("");
       setLargeOtherQuantity("");
       setCurrentStep(1);
-      onSuccess();
+      onSuccess(order);
     },
   });
 

@@ -3,14 +3,17 @@ import OrderForm from "./components/OrderForm";
 import OrderSuccessModal from "./components/OrderSuccessModal";
 
 function App() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [completedOrder, setCompletedOrder] = useState(null);
 
   return (
     <main>
-      <OrderForm onSuccess={() => setIsModalOpen(true)} />
+      <OrderForm onSuccess={setCompletedOrder} />
 
-      {isModalOpen && (
-        <OrderSuccessModal onClose={() => setIsModalOpen(false)} />
+      {completedOrder && (
+        <OrderSuccessModal
+          onClose={() => setCompletedOrder(null)}
+          order={completedOrder}
+        />
       )}
     </main>
   );

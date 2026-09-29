@@ -1,7 +1,9 @@
 import { PRODUCTS } from "../data/pricing";
 import { calculateOrderTotal } from "../utils/orderTotal";
+import { useId } from "react";
 
 function OrderSummary({ smallQty, largeQty }) {
+  const titleId = useId();
   const { shippingFee, total } = calculateOrderTotal(smallQty, largeQty);
 
   const items = [
@@ -11,10 +13,10 @@ function OrderSummary({ smallQty, largeQty }) {
 
   return (
     <section
-      aria-labelledby="order-summary-title"
+      aria-labelledby={titleId}
       className="card px-5 py-4"
     >
-      <h2 id="order-summary-title" className="field-label">
+      <h2 id={titleId} className="field-label">
         訂單明細
       </h2>
 
