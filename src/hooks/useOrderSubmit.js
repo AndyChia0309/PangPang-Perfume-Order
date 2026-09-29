@@ -7,6 +7,7 @@ export function useOrderSubmit({ onSuccess }) {
   const [submitError, setSubmitError] = useState("");
   const [pendingOrder, setPendingOrder] = useState(null);
   const formRef = useRef(null);
+  const formDataRef = useRef(null);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -22,6 +23,7 @@ export function useOrderSubmit({ onSuccess }) {
     }
 
     formRef.current = form;
+    formDataRef.current = formData;
     setPendingOrder(order);
   }
 
@@ -30,10 +32,10 @@ export function useOrderSubmit({ onSuccess }) {
     setIsSubmitting(true);
 
     try {
-      await submitOrder(pendingOrder);
+      const { orderNumber } = await submitOrder(formDataRef.current);
       formRef.current.reset();
       setPendingOrder(null);
-      onSuccess(pendingOrder);
+      onSuccess({ ...pendingOrder, order_number: orderNumber });
     } catch (error) {
       console.error("訂單送出失敗", error);
       setSubmitError("訂單送出失敗，請稍後再試，或透過 IG 與我們聯繫。");
