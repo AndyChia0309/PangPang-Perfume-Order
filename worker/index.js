@@ -13,6 +13,16 @@ export default {
         return Response.json({ error: "Method Not Allowed" }, { status: 405 });
       }
 
+      const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
+      const { success } = await env.ORDER_RATE_LIMITER.limit({ key: ip });
+
+      if (!success) {
+        return Response.json(
+          { error: "送出太頻繁，請稍後再試。" },
+          { status: 429 },
+        );
+      }
+
       return handleCreateOrder(request, env);
     }
 

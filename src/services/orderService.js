@@ -7,7 +7,9 @@ export async function submitOrder(formData) {
   const result = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(result.error || `HTTP ${response.status}`);
+    const error = new Error(result.error || `HTTP ${response.status}`);
+    error.status = response.status;
+    throw error;
   }
 
   return result;

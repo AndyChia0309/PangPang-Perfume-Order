@@ -38,7 +38,11 @@ export function useOrderSubmit({ onSuccess }) {
       onSuccess({ ...pendingOrder, order_number: orderNumber });
     } catch (error) {
       console.error("訂單送出失敗", error);
-      setSubmitError("訂單送出失敗，請稍後再試，或透過 IG 與我們聯繫。");
+      setSubmitError(
+        error.status === 429
+          ? error.message
+          : "訂單送出失敗，請稍後再試，或透過 IG 與我們聯繫。",
+      );
       setPendingOrder(null);
     } finally {
       setIsSubmitting(false);
