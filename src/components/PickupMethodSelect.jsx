@@ -1,8 +1,10 @@
 import { ChevronDown } from "lucide-react";
-import { orderFormFields } from "../../shared/orderForm";
+import {
+  orderFormFields,
+  PICKUP_METHODS,
+  textFieldRules,
+} from "../../shared/orderForm";
 import RequiredMark from "./RequiredMark";
-
-const pickupMethodOptions = ["超商自取"];
 
 function PickupMethodSelect() {
   return (
@@ -18,7 +20,7 @@ function PickupMethodSelect() {
             id="pickup-method"
             className="field cursor-pointer appearance-none pr-11"
           >
-            {pickupMethodOptions.map((option) => (
+            {PICKUP_METHODS.map((option) => (
               <option key={option}>{option}</option>
             ))}
           </select>
@@ -41,6 +43,7 @@ function PickupMethodSelect() {
           id="pickup-store-address"
           name={orderFormFields.pickupStoreAddress}
           placeholder="請輸入收件門市名稱或地址"
+          maxLength={textFieldRules.pickupStoreAddress.maxLength}
           required
           className="field"
         />

@@ -135,4 +135,39 @@ describe("createOrderFromFormData", () => {
     expect(errorMessage).toBe("請同意隱私權政策。");
     expect(order).toBeUndefined();
   });
+
+  it("收件方式不在選項內時回傳錯誤", () => {
+    const { order, errorMessage } = createOrderFromFormData(
+      buildFormData({ pickupMethod: "宅配到府" }),
+    );
+
+    expect(errorMessage).toBe("請選擇正確的收件方式。");
+    expect(order).toBeUndefined();
+  });
+
+  it("文字超過長度上限時回傳錯誤", () => {
+    const { order, errorMessage } = createOrderFromFormData(
+      buildFormData({ note: "字".repeat(201) }),
+    );
+
+    expect(errorMessage).toBe("備註不可超過 200 個字。");
+    expect(order).toBeUndefined();
+  });
+
+  it("文字剛好等於長度上限時可以送出", () => {
+    const { errorMessage } = createOrderFromFormData(
+      buildFormData({ note: "字".repeat(200) }),
+    );
+
+    expect(errorMessage).toBeUndefined();
+  });
+
+  it("單一品項數量超過上限時回傳錯誤", () => {
+    const { order, errorMessage } = createOrderFromFormData(
+      buildFormData({ smallQuantity: "other", smallQuantityOther: "100" }),
+    );
+
+    expect(errorMessage).toBe("單一品項最多訂購 99 瓶。");
+    expect(order).toBeUndefined();
+  });
 });

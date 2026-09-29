@@ -1,4 +1,4 @@
-import { orderFormFields } from "../../shared/orderForm";
+import { orderFormFields, textFieldRules } from "../../shared/orderForm";
 import RequiredMark from "./RequiredMark";
 
 const customerFields = [
@@ -7,6 +7,7 @@ const customerFields = [
     label: "訂購人姓名",
     type: "text",
     name: orderFormFields.customerName,
+    maxLength: textFieldRules.customerName.maxLength,
     autoComplete: "name",
     placeholder: "請輸入姓名",
     required: true,
@@ -16,6 +17,7 @@ const customerFields = [
     label: "電話",
     type: "tel",
     name: orderFormFields.phone,
+    maxLength: textFieldRules.phone.maxLength,
     autoComplete: "tel",
     inputMode: "tel",
     placeholder: "請輸入電話號碼",
@@ -26,6 +28,7 @@ const customerFields = [
     label: "Email",
     type: "email",
     name: orderFormFields.email,
+    maxLength: textFieldRules.email.maxLength,
     autoComplete: "email",
     placeholder: "請輸入電子郵件",
     required: true,
@@ -35,6 +38,7 @@ const customerFields = [
     label: "IG 帳號",
     type: "text",
     name: orderFormFields.instagram,
+    maxLength: textFieldRules.instagram.maxLength,
     autoComplete: "username",
     placeholder: "請輸入IG帳號",
   },
@@ -49,10 +53,7 @@ function CustomerFields() {
             {label}
             {inputProps.required && <RequiredMark />}
           </label>
-          <input
-            {...inputProps}
-            className="field"
-          />
+          <input {...inputProps} className="field" />
         </div>
       ))}
     </>

@@ -85,8 +85,8 @@
 第二階段（送出改走 Worker `/api/orders`）完成後的檢查。依下列順序處理，完成時打勾並附上 commit。
 
 - [x] **C0 必填欄位沒有標示**：「填寫訂購資訊」的表單看不出哪些欄位必填 → 必填欄位名稱後加上 `*`，並在標題說明「標有 * 的欄位為必填」（`94b5ce5`）
-- [x] **C1 共用程式的位置**：`worker/orders.js` 以 `../src/utils/...` 跨進前端資料夾取用驗證與金額計算 → 搬到 `shared/`，讓前端／後端／共用分開（本次 commit）
-- [ ] **C2 後端驗證不夠嚴格**：`pickup_method` 沒有限定可選的值，文字欄位（備註、地址等）沒有長度上限
+- [x] **C1 共用程式的位置**：`worker/orders.js` 以 `../src/utils/...` 跨進前端資料夾取用驗證與金額計算 → 搬到 `shared/`，讓前端／後端／共用分開（`9f096cf`）
+- [x] **C2 後端驗證不夠嚴格**：`pickup_method` 沒有限定可選的值，文字欄位（備註、地址等）沒有長度上限 → `shared/orderForm.js` 新增 `PICKUP_METHODS`、`MAX_QUANTITY`、`textFieldRules`，前端下拉選單與 `maxLength` 共用同一份規則，另加 4 個測試（本次 commit）
 - [ ] **C3 API 沒有防濫用**：任何人都能用程式大量呼叫 `/api/orders` 灌假訂單 → 加入 Cloudflare Turnstile 人機驗證（或 Rate Limiting）
 - [ ] **C4 `components` 有 14 個檔案平放** → 依用途分成子資料夾
 - [ ] **C5 README 過時**：仍寫著 `src/lib`、`VITE_SUPABASE_*` 與「訪客只能新增訂單」，缺少 Worker、`.dev.vars`、secret 的說明（最後做，反映整理後的結構）

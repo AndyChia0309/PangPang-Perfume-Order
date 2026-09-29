@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import { MAX_QUANTITY } from "../../shared/orderForm";
 
 const quantityOptions = ["0", "1", "2", "3", "other"];
 
@@ -42,7 +43,7 @@ function QuantitySelector({
                   name={otherFieldName}
                   inputMode="numeric"
                   min="1"
-                  max="99"
+                  max={MAX_QUANTITY}
                   step="1"
                   placeholder="數量"
                   aria-label="其他數量"

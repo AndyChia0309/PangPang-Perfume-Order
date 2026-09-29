@@ -1,4 +1,4 @@
-import { orderFormFields } from "../../shared/orderForm";
+import { orderFormFields, textFieldRules } from "../../shared/orderForm";
 import PickupMethodSelect from "./PickupMethodSelect";
 import RequiredMark from "./RequiredMark";
 
@@ -8,6 +8,7 @@ const recipientFields = [
     label: "收件人姓名",
     type: "text",
     name: orderFormFields.recipientName,
+    maxLength: textFieldRules.recipientName.maxLength,
     placeholder: "空白則同訂購人",
   },
   {
@@ -15,6 +16,7 @@ const recipientFields = [
     label: "收件人電話",
     type: "tel",
     name: orderFormFields.recipientPhone,
+    maxLength: textFieldRules.recipientPhone.maxLength,
     inputMode: "tel",
     placeholder: "空白則同訂購人",
   },
@@ -51,7 +53,7 @@ function RecipientFields() {
           name={orderFormFields.note}
           placeholder="請輸入備註"
           rows={3}
-          maxLength={200}
+          maxLength={textFieldRules.note.maxLength}
         />
       </div>
 
