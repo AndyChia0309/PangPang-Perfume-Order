@@ -1,12 +1,12 @@
 # 白日慵懶香水訂購網站
 
-這是畢業製作「香水夢遊 Parfum Tournée」訂購網站的重新改寫版本。原版使用純 HTML/CSS/JS 開發，資料透過 Google Sheet 串接；此版本改用 React + Vite 重構前端架構，並將資料庫遷移至 Supabase。
+這是畢業製作「香水夢遊 Parfum Tournée」訂購網站的重新改寫版本。原版使用純 HTML/CSS/JS 開發，資料透過 Google Sheet 串接；此版本改用 React + Vite 重構前端，以 Cloudflare Worker 作為後端 API，資料庫使用 Supabase。
 
-使用者會依序經過四個步驟認識品牌與香水，最後填寫訂購資料、選擇香水數量與領取方式，並將訂單送出到資料庫。
+使用者會依序經過四個步驟認識品牌與香水，最後填寫訂購資料、選擇香水數量與收件方式，確認後送出訂單並取得訂單編號。
 
 **線上展示：** https://pangpang-perfume-order.ykk910309.workers.dev/
 
-> 本網站目前為作品集展示使用，沒有正式的交易。
+> 本網站目前為作品集展示使用，目前暫無正式的交易內容。
 
 ## 功能特色
 
@@ -15,11 +15,24 @@
   2. 品牌影片
   3. 香味介紹（前中後調、商品圖）
   4. 訂購表單
-- 訂購表單：姓名、電話、Email、IG 帳號、收件人、收件門市地址、備註、隱私權同意
-- 香水數量選擇（小瓶／大瓶，含自訂數量）
-- 領取方式選擇，並附付款與寄送說明
-- 訂單送出成功提示
+- 訂購表單：訂購人、收件人、收件門市、備註、隱私權同意，必填欄位以 `*` 標示
+- 香水數量選擇（小瓶／大瓶，含自訂數量），即時顯示訂單明細與金額
+- 送出前的確認視窗，送出後顯示訂單編號（例如 `PP260929-7K3QX`）
 - RWD：手機到大螢幕皆可瀏覽，大螢幕時內容寬度與字級會跟著放大
+
+## 系統架構
+
+```text
+瀏覽器 ──FormData──▶ Cloudflare Worker  POST /api/orders ──secret key──▶ Supabase
+                      ├ Rate Limiting：每個 IP 每分鐘最多 5 次
+                      ├ 驗證表單（與前端共用 shared/orderForm.js）
+                      ├ 後端計算金額（shared/orderTotal.js）
+                      └ 產生訂單編號
+```
+
+- 前端不持有任何資料庫權限；訪客無法直接讀寫 Supabase
+- 驗證與金額計算前後端共用同一份程式，前端的檢查是為了使用體驗，後端的檢查才是真正的防線
+- 金額一律由後端依 `shared/pricing.js` 計算，不採用瀏覽器傳來的數字
 
 ## 使用技術
 
@@ -27,38 +40,48 @@
 - Vite
 - Tailwind CSS v4
 - lucide-react（icon）
-- Supabase
+- Cloudflare Workers（後端 API、靜態網站託管、Rate Limiting）
+- Supabase（PostgreSQL，Worker 透過 REST API 寫入）
 - Vitest（單元測試）
 - Oxlint
-- Cloudflare Workers（部署）
 
 ## 專案結構
 
 ```text
-src/
+src/                      # 前端
 ├── components/
 │   ├── steps/            # 四個步驟頁與共用的 StepHeader
 │   ├── icons/            # 自製 icon（Instagram）
 │   ├── OrderForm.jsx     # 步驟設定（INTRO_STEPS）與步驟切換
 │   ├── SiteHeader.jsx    # 頁首：Logo、作品集提示、IG 按鈕
 │   ├── WizardFooter.jsx  # 底部導覽列與進度條
-│   └── ...               # 表單欄位、商品資訊、成功視窗等元件
+│   └── ...               # 表單欄位、訂單明細、確認／成功視窗等元件
 ├── hooks/
-│   └── useOrderSubmit.js # 送出訂單流程：驗證、送出、錯誤處理
+│   ├── useOrderSubmit.js # 送出訂單流程：驗證、確認、送出、錯誤處理
+│   └── useDialog.js      # 原生 <dialog> 的開關與點背景關閉
 ├── data/                 # 品牌故事、商品文案、圖片等內容資料
-├── services/             # 訂單送出（送出時才載入 Supabase）
-├── utils/                # 表單資料整理與驗證（含單元測試）
-├── lib/                  # Supabase client
+├── services/             # 呼叫 /api/orders
 └── index.css             # 全站設計系統
+worker/                   # 後端（Cloudflare Worker）
+├── index.js              # 路由與 Rate Limiting
+└── orders.js             # 建立訂單：驗證、計算金額、產生編號、寫入 Supabase
+shared/                   # 前後端共用（修改時兩邊都會受影響）
+├── orderForm.js          # 表單欄位、驗證規則、長度與數量上限
+├── orderTotal.js         # 金額計算
+├── pricing.js            # 價格與運費
+└── *.test.js             # 單元測試
 docs/
-└── bug-log.md            # Bug 紀錄與架構改善清單
+└── bug-log.md            # Bug 紀錄、架構檢查與功能規劃
+wrangler.jsonc            # Worker 設定（靜態檔案、Rate Limiting）
 ```
 
 ## 修改內容與樣式
 
+- **價格與運費**：`shared/pricing.js`，前端顯示與後端計算會同時更新。
+- **欄位規則**：收件方式選項、數量上限、各欄位長度上限在 `shared/orderForm.js`，前端輸入框的 `maxLength` 也讀取同一份設定。
 - **文字內容**：品牌故事在 `src/data/brandStory.js`，商品文案、付款與寄送說明在 `src/data/productContent.js`，圖片在 `src/data/productMedia.js`。
 - **顏色、字級、字型**：統一在 `src/index.css` 的 `@theme` 設定。大螢幕的字級與內容寬度在同一個檔案的 `@variant` 區塊調整。
-- **共用樣式**：輸入框用 `field`、欄位名稱用 `field-label`、按鈕用 `btn` 搭配 `btn-primary` 或 `btn-outline`，都定義在 `src/index.css`。
+- **共用樣式**：輸入框用 `field`、欄位名稱用 `field-label`、按鈕用 `btn` 搭配 `btn-primary` 或 `btn-outline`、彈出視窗用 `modal`、卡片用 `card`，都定義在 `src/index.css`。
 - **步驟**：介紹步驟的順序與按鈕文字在 `src/components/OrderForm.jsx` 的 `INTRO_STEPS` 陣列，新增步驟只要加一行，總步數與進度條會自動計算；訂購表單固定為最後一步。
 
 ## 本機開發
@@ -68,23 +91,46 @@ npm install
 npm run dev
 ```
 
+`npm run dev` 會透過 `@cloudflare/vite-plugin` 同時啟動網站與 Worker，`http://localhost:5173/api/orders` 可直接測試 API。修改 `wrangler.jsonc` 或 `.dev.vars` 後需要重新啟動。
+
 ## 環境變數設定
 
-請建立 `.env.local`，並參考 `.env.example` 填入：
+**前端**：建立 `.env.local`，參考 `.env.example`：
 
 ```env
-VITE_SUPABASE_URL=
-VITE_SUPABASE_PUBLISHABLE_KEY=
 # 正式網址（不含結尾斜線），用於社群分享預覽
 VITE_SITE_URL=
 ```
 
-`VITE_` 開頭的變數會在 build 時寫進網頁。缺少 Supabase 變數時網站仍可瀏覽，只有送出訂單會失敗。
+`VITE_` 開頭的變數會在 build 時寫進網頁，任何人都看得到，不可放入金鑰。
+
+**Worker**：建立 `.dev.vars`（已被 `.gitignore` 排除，不可 commit）：
+
+```env
+SUPABASE_URL=https://<project-ref>.supabase.co
+SUPABASE_SECRET_KEY=sb_secret_...
+```
+
+`SUPABASE_SECRET_KEY` 在 Supabase **Project Settings → API Keys → Secret keys** 取得。這把 key 會略過 RLS，只能放在 Worker。
+
+## Supabase 設定
+
+`orders` 資料表除了訂單欄位外，需有 `order_number`（text、unique）、`subtotal`、`shipping_fee`、`total`（int4），皆為 not null。權限設定：
+
+```sql
+-- Worker 使用的 service_role：可新增、讀取、更新，不可刪除
+grant select, insert, update on table public.orders to service_role;
+
+-- 訪客（publishable key）不可寫入
+revoke insert on table public.orders from anon;
+```
+
+RLS 保持開啟且不設定任何 anon policy。
 
 ## 建置與預覽
 
 ```bash
-npm run build
+npm run build     # 輸出 dist/client（網站）與 dist/pangpang_perfume_order（Worker）
 npm run preview
 ```
 
@@ -96,22 +142,27 @@ npx vitest run    # 單元測試（執行一次）
 npm run lint      # Oxlint，已開啟 no-undef 檢查未定義變數
 ```
 
-測試位於 `src/utils/orderForm.test.js`，涵蓋數量計算、「其他」數量、必填欄位與去除空白等訂單驗證邏輯。
+測試位於 `shared/`，共 22 個，涵蓋數量與「其他」數量、必填欄位、收件人預設值、收件方式、長度與數量上限，以及金額計算。
 
 ## 部署
 
 部署於 Cloudflare Workers，push 到 `main` 後會自動 build 並部署。
 
-- Build command：`npm run build`，輸出資料夾：`dist`
-- 環境變數需設定在 **Settings → Build → Build Variables and Secrets**：`VITE_SUPABASE_URL`、`VITE_SUPABASE_PUBLISHABLE_KEY`、`VITE_SITE_URL`、`NODE_VERSION=22`
-- Supabase 的 `orders` 資料表已開啟 RLS，訪客只能新增訂單，無法讀取
+- Build command：`npm run build`
+- Deploy command：`npx wrangler deploy`（讀取 `wrangler.jsonc`）
+- **Build 變數**（Settings → Build → Build Variables and Secrets）：`VITE_SITE_URL`、`NODE_VERSION=22`
+- **Worker secret**（Settings → Variables and Secrets，類型選 Secret）：`SUPABASE_URL`、`SUPABASE_SECRET_KEY`。也可以用 `npx wrangler secret put <名稱>` 設定。類型若選 Text，會在下次部署時被 `wrangler.jsonc` 的設定清除
 
 開發與部署過程遇到的問題記錄在 [`docs/bug-log.md`](docs/bug-log.md)。
 
 ## 未來規劃
 
-- [ ] 使用者填寫寄件地址
-- [ ] 付款方式選擇
+- [ ] Turnstile 人機驗證（進行中）
+- [ ] 我的訂單：在瀏覽器保存下單紀錄，關閉視窗後仍可查看訂單編號
+- [ ] 訂單查詢：以訂單編號 + Email 查詢訂單內容與狀態
+- [ ] 自動寄信：新訂單通知、顧客確認信（需自有網域）
+- [ ] 訂單管理頁：登入後依狀態篩選、更新訂單狀態
+- [ ] 匯款回報與出貨通知
 
 ## 授權
 

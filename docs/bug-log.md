@@ -15,8 +15,48 @@
 | B7 | 正式網站變成空白頁 | 部署 | ✅ 已修正 | 部署設定 |
 | B8 | 從第四步返回再回來，已填的欄位被清空 | 程式 | ✅ 已修正 | `8bce6a1` |
 | B9 | 缺少 Supabase 環境變數時整個網站空白 | 程式 | ✅ 已修正 | `815deab` |
+| B10 | 加入 Cloudflare Vite 外掛後 `npm test` 無法啟動 | 程式 | ✅ 已修正 | `590954b` |
+| B11 | Supabase 新增 `order_number` 欄位失敗 | 資料庫 | ✅ 已修正 | 資料庫設定 |
+| B12 | Worker 用 secret key 讀寫 `orders` 被拒絕 | 資料庫 | ✅ 已修正 | 資料庫設定 |
+| B13 | 新增 Worker 檔案後 build 失敗、本機 API 全部回 500 | 程式 | ✅ 已修正 | `25cf5f7` |
+| B14 | 在 Cloudflare 後台設定的 secret 沒有生效 | 部署 | ✅ 已修正 | 部署設定 |
 
 ## 已修正
+
+### B14 在 Cloudflare 後台設定的 secret 沒有生效
+
+- **症狀：** 在後台新增 `SUPABASE_URL`、`SUPABASE_SECRET_KEY` 後，`wrangler secret list` 仍回傳 `[]`，線上也沒有產生新版本。
+- **原因：** 後台新增變數後還需要按 **Deploy** 才會套用；只按新增或直接關閉視窗不會生效。另外要確認是放在 **Settings → Variables and Secrets**，而不是 Build 底下的 Build Variables。
+- **修正：** 改用 `wrangler secret bulk` 從 `.dev.vars` 讀取並上傳，兩個 secret 皆設為 Secret 類型（Text 類型會在下次 `wrangler deploy` 時被 `wrangler.jsonc` 的設定清除）。上傳後以 `wrangler secret list` 確認，push 部署後新版本仍保留 secret。
+- **狀態：** 已修正（部署設定）。
+
+### B13 新增 Worker 檔案後 build 失敗、本機 API 全部回 500
+
+- **症狀：** `npm run build` 出現 `Could not resolve './orders.js' in worker/index.js`；修正檔名後，本機 `/api/health` 仍回 500。
+- **原因：** 檔案建立成 `worker/order.js`，與 import 的 `./orders.js` 不符。修正後 dev server 仍保留舊的載入錯誤，且 `.dev.vars` 只在啟動時讀取一次。
+- **修正：** 檔名改為 `orders.js`（與 `/api/orders` 一致），並重新啟動 `npm run dev`。Worker 的檔案結構或 `.dev.vars`、`wrangler.jsonc` 變動後都需要重開。
+- **狀態：** 已修正（`25cf5f7`）。
+
+### B12 Worker 用 secret key 讀寫 `orders` 被拒絕
+
+- **症狀：** 以 secret key 呼叫 Supabase REST API 回傳 `42501 permission denied for table orders`。
+- **原因：** `orders` 使用自訂的 Data API 權限，只授權 anon 新增。secret key 對應的 `service_role` 雖然會略過 RLS，仍需要資料表的 GRANT 權限。
+- **修正：** `grant select, insert, update on table public.orders to service_role;`。刻意不給 `delete`，程式不需要刪除訂單。
+- **狀態：** 已修正（資料庫設定）。
+
+### B11 Supabase 新增 `order_number` 欄位失敗
+
+- **症狀：** 新增欄位時出現 `23502: column "order_number" of relation "orders" contains null values`。
+- **原因：** 沒有勾選 Allow Nullable（等於 not null），但表中已有舊訂單，新欄位在這些列上只能是 null。
+- **修正：** 先以可為 null 的方式建立 `order_number`、`subtotal`、`shipping_fee`、`total`，等 Worker 上線、舊測試訂單清除後，再以 `alter column ... set not null` 改為必填。
+- **狀態：** 已修正（資料庫設定）。
+
+### B10 加入 Cloudflare Vite 外掛後 `npm test` 無法啟動
+
+- **症狀：** 執行測試出現 `Error: There is already a server associated with the config.`。
+- **原因：** Vitest 預設讀取 `vite.config.js`，因此也載入了 `cloudflare()` 外掛並嘗試再啟動一次 Worker 環境。
+- **修正：** 新增獨立的 `vitest.config.js`，Vitest 會優先使用它，不再載入 Cloudflare 外掛；以 `include` 指定測試位置。
+- **狀態：** 已修正（`590954b`）。
 
 ### B9 缺少 Supabase 環境變數時整個網站空白
 
@@ -88,10 +128,10 @@
 - [x] **C1 共用程式的位置**：`worker/orders.js` 以 `../src/utils/...` 跨進前端資料夾取用驗證與金額計算 → 搬到 `shared/`，讓前端／後端／共用分開（`9f096cf`）
 - [x] **C2 後端驗證不夠嚴格**：`pickup_method` 沒有限定可選的值，文字欄位（備註、地址等）沒有長度上限 → `shared/orderForm.js` 新增 `PICKUP_METHODS`、`MAX_QUANTITY`、`textFieldRules`，前端下拉選單與 `maxLength` 共用同一份規則，另加 4 個測試（`63a8a08`）
 - [ ] **C3 API 沒有防濫用**：任何人都能用程式大量呼叫 `/api/orders` 灌假訂單 → 加入 Cloudflare Turnstile 人機驗證（或 Rate Limiting）
-  - [x] C3-A Rate Limiting：`wrangler.jsonc` 加入 `ORDER_RATE_LIMITER`（每個 IP 每 60 秒 5 次），超過回 429，前端顯示「送出太頻繁」（本次 commit）
+  - [x] C3-A Rate Limiting：`wrangler.jsonc` 加入 `ORDER_RATE_LIMITER`（每個 IP 每 60 秒 5 次），超過回 429，前端顯示「送出太頻繁」（`8b1f3b2`）
   - [ ] C3-B Turnstile 人機驗證
 - [ ] **C4 `components` 有 14 個檔案平放** → 依用途分成子資料夾
-- [ ] **C5 README 過時**：仍寫著 `src/lib`、`VITE_SUPABASE_*` 與「訪客只能新增訂單」，缺少 Worker、`.dev.vars`、secret 的說明（最後做，反映整理後的結構）
+- [x] **C5 README 過時**：仍寫著 `src/lib`、`VITE_SUPABASE_*` 與「訪客只能新增訂單」，缺少 Worker、`.dev.vars`、secret 的說明 → 改寫為目前的架構：系統架構圖、`worker/`、`shared/`、`.dev.vars`、Supabase 權限設定、部署的 Build 變數與 Worker secret（本次 commit）
 
 ## 功能規劃：歷史訂單
 
