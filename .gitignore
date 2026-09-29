@@ -26,3 +26,6 @@ _original-assets/
 *.njsproj
 *.sln
 *.sw?
+
+.wrangler
+.dev.vars*
