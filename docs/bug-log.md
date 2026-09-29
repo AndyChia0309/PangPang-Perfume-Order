@@ -20,7 +20,7 @@
 | B12 | Worker 用 secret key 讀寫 `orders` 被拒絕 | 資料庫 | ✅ 已修正 | 資料庫設定 |
 | B13 | 新增 Worker 檔案後 build 失敗、本機 API 全部回 500 | 程式 | ✅ 已修正 | `25cf5f7` |
 | B14 | 在 Cloudflare 後台設定的 secret 沒有生效 | 部署 | ✅ 已修正 | 部署設定 |
-| B15 | 同一個 Turnstile token 可以重複通過驗證 | 安全 | ✅ 已修正 | 本次 commit |
+| B15 | 同一個 Turnstile token 可以重複通過驗證 | 安全 | ✅ 已修正 | `3a0dced` |
 
 ## 已修正
 
@@ -29,8 +29,8 @@
 - **症狀：** 以同一個 token 呼叫 siteverify 兩次，兩次都回傳 `success: true`，本機（`localhost`）與正式網址皆同。官方文件的說法是 token 只能驗證一次，重送應回傳 `timeout-or-duplicate`。
 - **原因：** Cloudflare 端未如文件所述拒絕重複的 token，原因不明。Worker 的 `verifyTurnstile` 相信 siteverify 的結果，因此重送的 token 也能建立訂單。
 - **修正：** 不依賴 siteverify 的重複檢查，自行補上防線：`orders` 新增 `turnstile_token_hash`（text、unique），Worker 以 SHA-256 雜湊 token 後隨訂單寫入。重送時資料庫回傳 409（`23505`），Worker 判斷錯誤內容含 `turnstile_token_hash` 後回傳 403。
-- **驗證：** 以既有訂單的雜湊值再寫入一次，資料庫回傳 `409 duplicate key value violates unique constraint "orders_turnstile_token_hash_key"`，未建立訂單。
-- **狀態：** 已修正（本次 commit）。
+- **驗證：** 以既有訂單的雜湊值再寫入一次，資料庫回傳 `409 duplicate key value violates unique constraint "orders_turnstile_token_hash_key"`，未建立訂單。部署後在正式網站以同一個 token 送出兩次完整訂單：第一次 201，第二次 403。
+- **狀態：** 已修正（`3a0dced`）。
 
 ### B14 在 Cloudflare 後台設定的 secret 沒有生效
 
@@ -129,7 +129,7 @@
 
 目前沒有。
 
-## 第二次架構檢查（2026-09-29）
+## 第二次架構檢查（2026-09-29，已全數完成）
 
 第二階段（送出改走 Worker `/api/orders`）完成後的檢查。依下列順序處理，完成時打勾並附上 commit。
 
@@ -138,8 +138,8 @@
 - [x] **C2 後端驗證不夠嚴格**：`pickup_method` 沒有限定可選的值，文字欄位（備註、地址等）沒有長度上限 → `shared/orderForm.js` 新增 `PICKUP_METHODS`、`MAX_QUANTITY`、`textFieldRules`，前端下拉選單與 `maxLength` 共用同一份規則，另加 4 個測試（`63a8a08`）
 - [x] **C3 API 沒有防濫用**：任何人都能用程式大量呼叫 `/api/orders` 灌假訂單 → 加入 Cloudflare Turnstile 人機驗證（或 Rate Limiting）
   - [x] C3-A Rate Limiting：`wrangler.jsonc` 加入 `ORDER_RATE_LIMITER`（每個 IP 每 60 秒 5 次），超過回 429，前端顯示「送出太頻繁」（`8b1f3b2`）
-  - [x] C3-B Turnstile 人機驗證：訂單表單加入 widget（`TurnstileWidget.jsx`，每次送出後以 `key` 重建），Worker 以 siteverify 檢查 `success`、`action`、`hostname`（`5129cc0`）；同一個 token 只能建立一筆訂單（見 B15，本次 commit）
-- [ ] **C4 `components` 有 14 個檔案平放** → 依用途分成子資料夾
+  - [x] C3-B Turnstile 人機驗證：訂單表單加入 widget（`TurnstileWidget.jsx`，每次送出後以 `key` 重建），Worker 以 siteverify 檢查 `success`、`action`、`hostname`（`5129cc0`）；同一個 token 只能建立一筆訂單（見 B15，`3a0dced`）
+- [x] **C4 `components` 有 14 個檔案平放** → 依用途分成子資料夾：`layout/`（頁面框架）、`form/`（表單輸入）、`order/`（訂單顯示與視窗）、`product/`（商品介紹），`OrderForm.jsx` 留在最外層當入口（本次 commit）
 - [x] **C5 README 過時**：仍寫著 `src/lib`、`VITE_SUPABASE_*` 與「訪客只能新增訂單」，缺少 Worker、`.dev.vars`、secret 的說明 → 改寫為目前的架構：系統架構圖、`worker/`、`shared/`、`.dev.vars`、Supabase 權限設定、部署的 Build 變數與 Worker secret（`8403686`）
 
 ## 功能規劃：歷史訂單

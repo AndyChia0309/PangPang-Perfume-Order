@@ -1,12 +1,12 @@
 import { useState } from "react";
-import SiteHeader from "./SiteHeader";
+import SiteHeader from "./layout/SiteHeader";
 import StepBrandIntro from "./steps/StepBrandIntro";
 import StepOrder from "./steps/StepOrder";
 import StepScent from "./steps/StepScent";
 import StepVideo from "./steps/StepVideo";
-import WizardFooter from "./WizardFooter";
+import WizardFooter from "./layout/WizardFooter";
 import { useOrderSubmit } from "../hooks/useOrderSubmit";
-import ConfirmOrderModal from "./ConfirmOrderModal";
+import ConfirmOrderModal from "./order/ConfirmOrderModal";
 
 const INTRO_STEPS = [
   { Component: StepBrandIntro, nextLabel: "繼續" },

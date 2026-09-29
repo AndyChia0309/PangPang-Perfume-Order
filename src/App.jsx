@@ -1,6 +1,6 @@
 import { useState } from "react";
 import OrderForm from "./components/OrderForm";
-import OrderSuccessModal from "./components/OrderSuccessModal";
+import OrderSuccessModal from "./components/order/OrderSuccessModal";
 
 function App() {
   const [completedOrder, setCompletedOrder] = useState(null);

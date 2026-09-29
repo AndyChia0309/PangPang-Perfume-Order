@@ -3,7 +3,7 @@ import {
   orderFormFields,
   PICKUP_METHODS,
   textFieldRules,
-} from "../../shared/orderForm";
+} from "../../../shared/orderForm";
 import RequiredMark from "./RequiredMark";
 
 function PickupMethodSelect() {

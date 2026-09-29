@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { MAX_QUANTITY } from "../../shared/orderForm";
+import { MAX_QUANTITY } from "../../../shared/orderForm";
 
 const quantityOptions = ["0", "1", "2", "3", "other"];
 

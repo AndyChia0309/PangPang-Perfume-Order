@@ -1,4 +1,4 @@
-import { orderFormFields, textFieldRules } from "../../shared/orderForm";
+import { orderFormFields, textFieldRules } from "../../../shared/orderForm";
 import PickupMethodSelect from "./PickupMethodSelect";
 import RequiredMark from "./RequiredMark";
 

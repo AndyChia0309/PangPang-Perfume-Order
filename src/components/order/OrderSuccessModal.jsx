@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { useDialog } from "../hooks/useDialog";
+import { useDialog } from "../../hooks/useDialog";
 import OrderDetails from "./OrderDetails";
 
 function OrderSuccessModal({ order, onClose }) {

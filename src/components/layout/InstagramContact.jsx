@@ -1,4 +1,4 @@
-import InstagramIcon from "./icons/InstagramIcon";
+import InstagramIcon from "../icons/InstagramIcon";
 
 function InstagramContact() {
   return (

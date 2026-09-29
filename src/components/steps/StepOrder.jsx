@@ -1,12 +1,12 @@
-import TurnstileWidget from "../TurnstileWidget";
+import TurnstileWidget from "../form/TurnstileWidget";
 import { orderNotice } from "../../data/productContent";
 import { orderFormFields } from "../../../shared/orderForm";
-import CustomerFields from "../CustomerFields";
-import QuantitySelector from "../QuantitySelector";
+import CustomerFields from "../form/CustomerFields";
+import QuantitySelector from "../form/QuantitySelector";
 import StepHeader from "./StepHeader";
-import OrderSummary from "../OrderSummary";
+import OrderSummary from "../order/OrderSummary";
 import { toQuantity } from "../../../shared/orderTotal";
-import RecipientFields from "../RecipientFields";
+import RecipientFields from "../form/RecipientFields";
 
 function StepOrder({
   selectedSmallQuantity,

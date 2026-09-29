@@ -1,4 +1,4 @@
-import { useDialog } from "../hooks/useDialog";
+import { useDialog } from "../../hooks/useDialog";
 import OrderDetails from "./OrderDetails";
 
 function ConfirmOrderModal({ order, isSubmitting, onConfirm, onCancel }) {

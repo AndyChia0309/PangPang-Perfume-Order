@@ -1,4 +1,4 @@
-import { productContent } from "../data/productContent";
+import { productContent } from "../../data/productContent";
 
 function ProductInfo() {
   const { title, promotion, prices, notes } = productContent;

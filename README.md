@@ -52,12 +52,13 @@
 ```text
 src/                      # 前端
 ├── components/
+│   ├── OrderForm.jsx     # 訂購流程入口：步驟設定（INTRO_STEPS）與步驟切換
+│   ├── layout/           # 頁面框架：頁首（SiteHeader）、底部導覽列與進度條（WizardFooter）
 │   ├── steps/            # 四個步驟頁與共用的 StepHeader
-│   ├── icons/            # 自製 icon（Instagram）
-│   ├── OrderForm.jsx     # 步驟設定（INTRO_STEPS）與步驟切換
-│   ├── SiteHeader.jsx    # 頁首：Logo、作品集提示、IG 按鈕
-│   ├── WizardFooter.jsx  # 底部導覽列與進度條
-│   └── ...               # 表單欄位、訂單明細、確認／成功視窗等元件
+│   ├── form/             # 表單輸入：訂購人、收件人、數量、必填標示、Turnstile
+│   ├── order/            # 訂單顯示：訂單明細、確認視窗、成功視窗
+│   ├── product/          # 商品圖與商品資訊
+│   └── icons/            # 自製 icon（Instagram）
 ├── hooks/
 │   ├── useOrderSubmit.js # 送出訂單流程：驗證、確認、送出、錯誤處理
 │   └── useDialog.js      # 原生 <dialog> 的開關與點背景關閉

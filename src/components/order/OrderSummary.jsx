@@ -1,5 +1,5 @@
-import { PRODUCTS } from "../../shared/pricing";
-import { calculateOrderTotal } from "../../shared/orderTotal";
+import { PRODUCTS } from "../../../shared/pricing";
+import { calculateOrderTotal } from "../../../shared/orderTotal";
 import { useId } from "react";
 
 function OrderSummary({ smallQty, largeQty }) {

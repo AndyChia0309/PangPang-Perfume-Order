@@ -1,4 +1,4 @@
-import brandLogo from "../assets/images/logo.svg";
+import brandLogo from "../../assets/images/logo.svg";
 import InstagramContact from "./InstagramContact";
 
 function SiteHeader() {

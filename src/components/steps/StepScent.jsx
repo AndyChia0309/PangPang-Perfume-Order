@@ -1,6 +1,6 @@
 import { productMedia } from "../../data/productMedia";
-import ProductGallery from "../ProductGallery";
-import ProductInfo from "../ProductInfo";
+import ProductGallery from "../product/ProductGallery";
+import ProductInfo from "../product/ProductInfo";
 import StepHeader from "./StepHeader";
 
 function StepScent() {
