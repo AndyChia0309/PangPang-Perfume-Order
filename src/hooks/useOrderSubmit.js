@@ -8,6 +8,7 @@ export function useOrderSubmit({ onSuccess }) {
   const [pendingOrder, setPendingOrder] = useState(null);
   const formRef = useRef(null);
   const formDataRef = useRef(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -19,6 +20,11 @@ export function useOrderSubmit({ onSuccess }) {
 
     if (errorMessage) {
       setSubmitError(errorMessage);
+      return;
+    }
+
+    if (!formData.get("cf-turnstile-response")) {
+      setSubmitError("正在確認您不是機器人，請稍候再按一次。");
       return;
     }
 
@@ -39,13 +45,14 @@ export function useOrderSubmit({ onSuccess }) {
     } catch (error) {
       console.error("訂單送出失敗", error);
       setSubmitError(
-        error.status === 429
+        [403, 429].includes(error.status)
           ? error.message
           : "訂單送出失敗，請稍後再試，或透過 IG 與我們聯繫。",
       );
       setPendingOrder(null);
     } finally {
       setIsSubmitting(false);
+      setTurnstileKey((key) => key + 1);
     }
   }
 
@@ -57,6 +64,7 @@ export function useOrderSubmit({ onSuccess }) {
     isSubmitting,
     submitError,
     pendingOrder,
+    turnstileKey,
     handleSubmit,
     confirmSubmit,
     cancelConfirm,

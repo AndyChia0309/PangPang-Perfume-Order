@@ -1,3 +1,4 @@
+import TurnstileWidget from "../TurnstileWidget";
 import { orderNotice } from "../../data/productContent";
 import { orderFormFields } from "../../../shared/orderForm";
 import CustomerFields from "../CustomerFields";
@@ -17,6 +18,8 @@ function StepOrder({
   onSmallOtherQuantityChange,
   onLargeOtherQuantityChange,
   submitError,
+  isActive,
+  turnstileKey,
 }) {
   const smallQty = toQuantity(selectedSmallQuantity, smallOtherQuantity);
   const largeQty = toQuantity(selectedLargeQuantity, largeOtherQuantity);
@@ -67,6 +70,8 @@ function StepOrder({
           </dl>
         </aside>
       </div>
+
+      {isActive && <TurnstileWidget key={turnstileKey} />}
 
       {submitError && (
         <p className="mt-6 text-caption text-danger">{submitError}</p>

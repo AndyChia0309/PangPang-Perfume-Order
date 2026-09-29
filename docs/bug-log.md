@@ -131,7 +131,7 @@
   - [x] C3-A Rate Limiting：`wrangler.jsonc` 加入 `ORDER_RATE_LIMITER`（每個 IP 每 60 秒 5 次），超過回 429，前端顯示「送出太頻繁」（`8b1f3b2`）
   - [ ] C3-B Turnstile 人機驗證
 - [ ] **C4 `components` 有 14 個檔案平放** → 依用途分成子資料夾
-- [x] **C5 README 過時**：仍寫著 `src/lib`、`VITE_SUPABASE_*` 與「訪客只能新增訂單」，缺少 Worker、`.dev.vars`、secret 的說明 → 改寫為目前的架構：系統架構圖、`worker/`、`shared/`、`.dev.vars`、Supabase 權限設定、部署的 Build 變數與 Worker secret（本次 commit）
+- [x] **C5 README 過時**：仍寫著 `src/lib`、`VITE_SUPABASE_*` 與「訪客只能新增訂單」，缺少 Worker、`.dev.vars`、secret 的說明 → 改寫為目前的架構：系統架構圖、`worker/`、`shared/`、`.dev.vars`、Supabase 權限設定、部署的 Build 變數與 Worker secret（`8403686`）
 
 ## 功能規劃：歷史訂單
 

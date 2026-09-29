@@ -37,6 +37,7 @@ function OrderForm({ onSuccess }) {
     isSubmitting,
     submitError,
     pendingOrder,
+    turnstileKey,
     handleSubmit,
     confirmSubmit,
     cancelConfirm,
@@ -74,6 +75,8 @@ function OrderForm({ onSuccess }) {
                 largeOtherQuantity={largeOtherQuantity}
                 onLargeOtherQuantityChange={setLargeOtherQuantity}
                 submitError={submitError}
+                isActive={isOrderStep}
+                turnstileKey={turnstileKey}
               />
             </div>
           </div>

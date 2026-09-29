@@ -1,3 +1,4 @@
+import { verifyTurnstile } from "./turnstile.js";
 import { createOrderFromFormData } from "../shared/orderForm.js";
 import { calculateOrderTotal } from "../shared/orderTotal.js";
 
@@ -23,6 +24,16 @@ export async function handleCreateOrder(request, env) {
     formData = await request.formData();
   } catch {
     return Response.json({ error: "資料格式錯誤。" }, { status: 400 });
+  }
+
+  const token = formData.get("cf-turnstile-response");
+  const ip = request.headers.get("cf-connecting-ip");
+
+  if (!(await verifyTurnstile(token, ip, env))) {
+    return Response.json(
+      { error: "人機驗證失敗，請稍候再試一次。" },
+      { status: 403 },
+    );
   }
 
   const { order, errorMessage } = createOrderFromFormData(formData);
