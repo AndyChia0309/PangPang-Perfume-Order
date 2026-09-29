@@ -1,16 +1,15 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { submitOrder } from "../services/orderService";
 import { createOrderFromFormData } from "../utils/orderForm";
 
 export function useOrderSubmit({ onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [pendingOrder, setPendingOrder] = useState(null);
+  const formRef = useRef(null);
 
-  async function handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
-    if (isSubmitting) return;
-
-    setIsSubmitting(true);
     setSubmitError("");
 
     const form = event.currentTarget;
@@ -19,21 +18,41 @@ export function useOrderSubmit({ onSuccess }) {
 
     if (errorMessage) {
       setSubmitError(errorMessage);
-      setIsSubmitting(false);
       return;
     }
 
+    formRef.current = form;
+    setPendingOrder(order);
+  }
+
+  async function confirmSubmit() {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
-      await submitOrder(order);
-      form.reset();
-      onSuccess(order);
+      await submitOrder(pendingOrder);
+      formRef.current.reset();
+      setPendingOrder(null);
+      onSuccess(pendingOrder);
     } catch (error) {
       console.error("訂單送出失敗", error);
       setSubmitError("訂單送出失敗，請稍後再試，或透過 IG 與我們聯繫。");
+      setPendingOrder(null);
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  return { isSubmitting, submitError, handleSubmit };
+  function cancelConfirm() {
+    setPendingOrder(null);
+  }
+
+  return {
+    isSubmitting,
+    submitError,
+    pendingOrder,
+    handleSubmit,
+    confirmSubmit,
+    cancelConfirm,
+  };
 }

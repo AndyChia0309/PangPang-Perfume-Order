@@ -6,6 +6,7 @@ import StepScent from "./steps/StepScent";
 import StepVideo from "./steps/StepVideo";
 import WizardFooter from "./WizardFooter";
 import { useOrderSubmit } from "../hooks/useOrderSubmit";
+import ConfirmOrderModal from "./ConfirmOrderModal";
 
 const INTRO_STEPS = [
   { Component: StepBrandIntro, nextLabel: "繼續" },
@@ -32,7 +33,14 @@ function OrderForm({ onSuccess }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  const { isSubmitting, submitError, handleSubmit } = useOrderSubmit({
+  const {
+    isSubmitting,
+    submitError,
+    pendingOrder,
+    handleSubmit,
+    confirmSubmit,
+    cancelConfirm,
+  } = useOrderSubmit({
     onSuccess(order) {
       setSelectedSmallQuantity("0");
       setSelectedLargeQuantity("0");
@@ -47,38 +55,49 @@ function OrderForm({ onSuccess }) {
   const isOrderStep = currentStep === TOTAL_STEPS;
 
   return (
-    <form className="flex min-h-dvh flex-col" onSubmit={handleSubmit}>
-      <SiteHeader />
-      <div className="page-gutter flex flex-1 flex-col justify-center">
-        <div className="mx-auto w-full max-w-content py-6 md:py-10 lg:py-14">
-          {introStep && <introStep.Component />}
+    <>
+      <form className="flex min-h-dvh flex-col" onSubmit={handleSubmit}>
+        <SiteHeader />
+        <div className="page-gutter flex flex-1 flex-col justify-center">
+          <div className="mx-auto w-full max-w-content py-6 md:py-10 lg:py-14">
+            {introStep && <introStep.Component />}
 
-          {/* 訂購表單保持掛載、只用 hidden 隱藏，返回上一步再回來時已填的欄位才不會被清空 */}
-          <div hidden={!isOrderStep}>
-            <StepOrder
-              selectedSmallQuantity={selectedSmallQuantity}
-              onSmallQuantityChange={setSelectedSmallQuantity}
-              smallOtherQuantity={smallOtherQuantity}
-              onSmallOtherQuantityChange={setSmallOtherQuantity}
-              selectedLargeQuantity={selectedLargeQuantity}
-              onLargeQuantityChange={setSelectedLargeQuantity}
-              largeOtherQuantity={largeOtherQuantity}
-              onLargeOtherQuantityChange={setLargeOtherQuantity}
-              submitError={submitError}
-            />
+            {/* 訂購表單保持掛載、只用 hidden 隱藏，返回上一步再回來時已填的欄位才不會被清空 */}
+            <div hidden={!isOrderStep}>
+              <StepOrder
+                selectedSmallQuantity={selectedSmallQuantity}
+                onSmallQuantityChange={setSelectedSmallQuantity}
+                smallOtherQuantity={smallOtherQuantity}
+                onSmallOtherQuantityChange={setSmallOtherQuantity}
+                selectedLargeQuantity={selectedLargeQuantity}
+                onLargeQuantityChange={setSelectedLargeQuantity}
+                largeOtherQuantity={largeOtherQuantity}
+                onLargeOtherQuantityChange={setLargeOtherQuantity}
+                submitError={submitError}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <WizardFooter
-        currentStep={currentStep}
-        totalSteps={TOTAL_STEPS}
-        onBack={goToPreviousStep}
-        onContinue={goToNextStep}
-        isSubmitting={isSubmitting}
-        continueLabel={introStep?.nextLabel}
-      />
-    </form>
+        <WizardFooter
+          currentStep={currentStep}
+          totalSteps={TOTAL_STEPS}
+          onBack={goToPreviousStep}
+          onContinue={goToNextStep}
+          isSubmitting={isSubmitting}
+          continueLabel={introStep?.nextLabel}
+        />
+      </form>
+
+      {pendingOrder && (
+        <ConfirmOrderModal
+          order={pendingOrder}
+          isSubmitting={isSubmitting}
+          onConfirm={confirmSubmit}
+          onCancel={cancelConfirm}
+        />
+      )}
+    </>
   );
 }
 

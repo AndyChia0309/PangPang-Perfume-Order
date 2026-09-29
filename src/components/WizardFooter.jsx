@@ -43,7 +43,7 @@ function WizardFooter({
             type="submit"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "送出中..." : "送出訂單"}
+            {isSubmitting ? "送出中..." : "確認訂單"}
           </button>
         ) : (
           <button
