@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { orderFormFields } from "../utils/orderForm";
+import RequiredMark from "./RequiredMark";
 
 const pickupMethodOptions = ["超商自取"];
 
@@ -32,6 +33,7 @@ function PickupMethodSelect() {
       <div className="flex flex-col gap-2">
         <label htmlFor="pickup-store-address" className="field-label">
           收件門市地址
+          <RequiredMark />
         </label>
 
         <input

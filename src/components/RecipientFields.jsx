@@ -1,5 +1,6 @@
 import { orderFormFields } from "../utils/orderForm";
 import PickupMethodSelect from "./PickupMethodSelect";
+import RequiredMark from "./RequiredMark";
 
 const recipientFields = [
   {
@@ -67,6 +68,7 @@ function RecipientFields() {
           className="cursor-pointer text-caption text-ink-muted"
         >
           我同意香水夢遊蒐集並使用以上個人資料，僅用於本次訂單處理、出貨與聯繫。
+          <RequiredMark />
         </label>
       </div>
     </section>

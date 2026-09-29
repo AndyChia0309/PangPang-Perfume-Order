@@ -1,4 +1,5 @@
 import { orderFormFields } from "../utils/orderForm";
+import RequiredMark from "./RequiredMark";
 
 const customerFields = [
   {
@@ -46,6 +47,7 @@ function CustomerFields() {
         <div className="flex flex-col gap-2" key={inputProps.name}>
           <label htmlFor={inputProps.id} className="field-label">
             {label}
+            {inputProps.required && <RequiredMark />}
           </label>
           <input
             {...inputProps}

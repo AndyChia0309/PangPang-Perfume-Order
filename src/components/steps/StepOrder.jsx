@@ -25,7 +25,7 @@ function StepOrder({
     <div>
       <StepHeader
         title="填寫訂購資訊"
-        description="最後一步，留下您的資料完成訂購。"
+        description="最後一步，留下您的資料完成訂購。標有 * 的欄位為必填。"
       />
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
