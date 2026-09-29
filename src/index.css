@@ -102,6 +102,10 @@
   @apply rounded-card border border-line bg-white shadow-card;
 }
 
+@utility modal {
+  @apply m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-[520px] overflow-y-auto rounded-card bg-white shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop:bg-black/40;
+}
+
 @utility field-label {
   @apply text-body font-medium text-ink;
 }
