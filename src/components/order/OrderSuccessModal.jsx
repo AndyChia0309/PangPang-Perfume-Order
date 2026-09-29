@@ -29,8 +29,9 @@ function OrderSuccessModal({ order, onClose }) {
           訂單完成
         </h2>
         <p className="text-body text-ink-muted">
-          訂單確認後，我們將在兩日內寄送訂單資訊給您，再麻煩至 Email 或 IG
-          帳號查收訂單確認資訊及匯款資料。
+          訂單確認信已寄到 <span className="text-ink">{order.email}</span>
+          ，信中附有匯款資訊。若沒有收到，請查看垃圾郵件匣，或透過 IG
+          與我們聯繫。
         </p>
         <div className="mt-6 rounded-card border border-brand px-5 py-4 text-center">
           <p className="text-caption text-ink-muted">訂單編號</p>

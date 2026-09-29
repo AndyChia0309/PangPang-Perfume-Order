@@ -1,3 +1,4 @@
+import { sendOrderEmails } from "./email.js";
 import { hashToken, verifyTurnstile } from "./turnstile.js";
 import { createOrderFromFormData } from "../shared/orderForm.js";
 import { calculateOrderTotal } from "../shared/orderTotal.js";
@@ -17,7 +18,7 @@ function createOrderNumber() {
   return `PP${date}-${code}`;
 }
 
-export async function handleCreateOrder(request, env) {
+export async function handleCreateOrder(request, env, ctx) {
   let formData;
 
   try {
@@ -82,6 +83,8 @@ export async function handleCreateOrder(request, env) {
       { status: 500 },
     );
   }
+
+  ctx.waitUntil(sendOrderEmails(env, row));
 
   return Response.json(
     { orderNumber: row.order_number, subtotal, shippingFee, total },

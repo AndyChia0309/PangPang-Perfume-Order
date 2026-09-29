@@ -1,7 +1,7 @@
 import { handleCreateOrder } from "./orders.js";
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (url.pathname === "/api/health") {
@@ -23,7 +23,7 @@ export default {
         );
       }
 
-      return handleCreateOrder(request, env);
+      return handleCreateOrder(request, env, ctx);
     }
 
     return new Response("Not Found", { status: 404 });
