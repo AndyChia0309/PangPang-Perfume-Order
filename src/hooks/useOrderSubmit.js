@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { submitOrder } from "../services/orderService";
-import { createOrderFromFormData } from "../utils/orderForm";
+import { createOrderFromFormData } from "../../shared/orderForm";
 
 export function useOrderSubmit({ onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);

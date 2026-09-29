@@ -1,4 +1,4 @@
-import { PRODUCTS, SHIPPING_FEE } from "./pricing";
+import { PRODUCTS, SHIPPING_FEE } from "../../shared/pricing";
 
 export const productContent = {
   title: "白日慵懶香水訂購",

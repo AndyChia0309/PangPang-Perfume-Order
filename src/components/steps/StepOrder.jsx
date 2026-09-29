@@ -1,10 +1,10 @@
 import { orderNotice } from "../../data/productContent";
-import { orderFormFields } from "../../utils/orderForm";
+import { orderFormFields } from "../../../shared/orderForm";
 import CustomerFields from "../CustomerFields";
 import QuantitySelector from "../QuantitySelector";
 import StepHeader from "./StepHeader";
 import OrderSummary from "../OrderSummary";
-import { toQuantity } from "../../utils/orderTotal";
+import { toQuantity } from "../../../shared/orderTotal";
 import RecipientFields from "../RecipientFields";
 
 function StepOrder({

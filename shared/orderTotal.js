@@ -1,4 +1,4 @@
-import { PRODUCTS, SHIPPING_FEE } from "../data/pricing";
+import { PRODUCTS, SHIPPING_FEE } from "./pricing";
 
 export function calculateOrderTotal(smallQty, largeQty) {
   const subtotal =

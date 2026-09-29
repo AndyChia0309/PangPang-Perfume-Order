@@ -1,5 +1,5 @@
-import { createOrderFromFormData } from "../src/utils/orderForm.js";
-import { calculateOrderTotal } from "../src/utils/orderTotal.js";
+import { createOrderFromFormData } from "../shared/orderForm.js";
+import { calculateOrderTotal } from "../shared/orderTotal.js";
 
 const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
