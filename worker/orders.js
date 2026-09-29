@@ -1,4 +1,4 @@
-import { verifyTurnstile } from "./turnstile.js";
+import { hashToken, verifyTurnstile } from "./turnstile.js";
 import { createOrderFromFormData } from "../shared/orderForm.js";
 import { calculateOrderTotal } from "../shared/orderTotal.js";
 
@@ -53,6 +53,7 @@ export async function handleCreateOrder(request, env) {
     subtotal,
     shipping_fee: shippingFee,
     total,
+    turnstile_token_hash: await hashToken(token),
   };
 
   const response = await fetch(`${env.SUPABASE_URL}/rest/v1/orders`, {
@@ -66,7 +67,16 @@ export async function handleCreateOrder(request, env) {
   });
 
   if (!response.ok) {
-    console.error("Supabase 寫入失敗", response.status, await response.text());
+    const detail = await response.text();
+
+    if (response.status === 409 && detail.includes("turnstile_token_hash")) {
+      return Response.json(
+        { error: "人機驗證失敗，請稍候再試一次。" },
+        { status: 403 },
+      );
+    }
+
+    console.error("Supabase 寫入失敗", response.status, detail);
     return Response.json(
       { error: "訂單送出失敗，請稍後再試。" },
       { status: 500 },

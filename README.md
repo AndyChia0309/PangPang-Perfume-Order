@@ -25,6 +25,7 @@
 ```text
 瀏覽器 ──FormData──▶ Cloudflare Worker  POST /api/orders ──secret key──▶ Supabase
                       ├ Rate Limiting：每個 IP 每分鐘最多 5 次
+                      ├ Turnstile 人機驗證（siteverify），同一個 token 只能建立一筆訂單
                       ├ 驗證表單（與前端共用 shared/orderForm.js）
                       ├ 後端計算金額（shared/orderTotal.js）
                       └ 產生訂單編號
@@ -41,6 +42,7 @@
 - Tailwind CSS v4
 - lucide-react（icon）
 - Cloudflare Workers（後端 API、靜態網站託管、Rate Limiting）
+- Cloudflare Turnstile（人機驗證）
 - Supabase（PostgreSQL，Worker 透過 REST API 寫入）
 - Vitest（單元測試）
 - Oxlint
@@ -64,7 +66,8 @@ src/                      # 前端
 └── index.css             # 全站設計系統
 worker/                   # 後端（Cloudflare Worker）
 ├── index.js              # 路由與 Rate Limiting
-└── orders.js             # 建立訂單：驗證、計算金額、產生編號、寫入 Supabase
+├── orders.js             # 建立訂單：人機驗證、驗證、計算金額、產生編號、寫入 Supabase
+└── turnstile.js          # Turnstile siteverify 與 token 雜湊
 shared/                   # 前後端共用（修改時兩邊都會受影響）
 ├── orderForm.js          # 表單欄位、驗證規則、長度與數量上限
 ├── orderTotal.js         # 金額計算
@@ -109,13 +112,17 @@ VITE_SITE_URL=
 ```env
 SUPABASE_URL=https://<project-ref>.supabase.co
 SUPABASE_SECRET_KEY=sb_secret_...
+TURNSTILE_SECRET=
+TURNSTILE_HOSTNAMES=localhost
 ```
 
 `SUPABASE_SECRET_KEY` 在 Supabase **Project Settings → API Keys → Secret keys** 取得。這把 key 會略過 RLS，只能放在 Worker。
 
+`TURNSTILE_SECRET` 是 Turnstile widget 的 Secret Key；Site Key 為公開值，寫在 `src/components/TurnstileWidget.jsx`。`TURNSTILE_HOSTNAMES` 是允許取得 token 的網址（逗號分隔），正式環境的值寫在 `wrangler.jsonc` 的 `vars`，只包含正式網址，本機由 `.dev.vars` 覆蓋為 `localhost`。Turnstile widget 需登記正式網址與 `localhost` 兩個 hostname。
+
 ## Supabase 設定
 
-`orders` 資料表除了訂單欄位外，需有 `order_number`（text、unique）、`subtotal`、`shipping_fee`、`total`（int4），皆為 not null。權限設定：
+`orders` 資料表除了訂單欄位外，需有 `order_number`（text、unique）、`subtotal`、`shipping_fee`、`total`（int4），皆為 not null；以及 `turnstile_token_hash`（text、unique），防止同一個 Turnstile token 重複建立訂單。權限設定：
 
 ```sql
 -- Worker 使用的 service_role：可新增、讀取、更新，不可刪除
@@ -151,13 +158,12 @@ npm run lint      # Oxlint，已開啟 no-undef 檢查未定義變數
 - Build command：`npm run build`
 - Deploy command：`npx wrangler deploy`（讀取 `wrangler.jsonc`）
 - **Build 變數**（Settings → Build → Build Variables and Secrets）：`VITE_SITE_URL`、`NODE_VERSION=22`
-- **Worker secret**（Settings → Variables and Secrets，類型選 Secret）：`SUPABASE_URL`、`SUPABASE_SECRET_KEY`。也可以用 `npx wrangler secret put <名稱>` 設定。類型若選 Text，會在下次部署時被 `wrangler.jsonc` 的設定清除
+- **Worker secret**（Settings → Variables and Secrets，類型選 Secret）：`SUPABASE_URL`、`SUPABASE_SECRET_KEY`、`TURNSTILE_SECRET`。也可以用 `npx wrangler secret put <名稱>` 設定。類型若選 Text，會在下次部署時被 `wrangler.jsonc` 的設定清除
 
 開發與部署過程遇到的問題記錄在 [`docs/bug-log.md`](docs/bug-log.md)。
 
 ## 未來規劃
 
-- [ ] Turnstile 人機驗證（進行中）
 - [ ] 我的訂單：在瀏覽器保存下單紀錄，關閉視窗後仍可查看訂單編號
 - [ ] 訂單查詢：以訂單編號 + Email 查詢訂單內容與狀態
 - [ ] 自動寄信：新訂單通知、顧客確認信（需自有網域）
