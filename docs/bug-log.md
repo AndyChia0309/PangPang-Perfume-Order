@@ -171,6 +171,15 @@
 - [x] **S6 開發套件漏洞（低）**：`wrangler`／`miniflare` 使用的 `undici` 有 4 個中度漏洞，只影響本機開發 → `npm audit fix`。**處理結果：** 處理時已增加為 3 個中度、1 個高風險（`undici` TLS 憑證驗證可能被繞過）。執行 `npm audit fix`，`wrangler` 4.143.0 → 4.144.0、`@cloudflare/vite-plugin` 1.62.0 → 1.62.2、`undici` 7.29.0 → 7.29.1，`npm audit` 為 0 個漏洞；測試與 build 正常（`35a0528`）。之後可定期執行 `npm audit` 檢查
 - [x] **S7 個資保存期限（低）**：訂單個資無限期保存，且資料庫中仍有測試訂單 → 訂定保存期限與清理方式。**2026-09-30 決定：** 保存 30 天，到期只清除個資（姓名、電話、Email、IG、地址、收件人、備註），保留訂單編號、數量、金額、日期供統計；以 Supabase pg_cron 每日執行。**處理結果：** 新增 `anonymized_at` 欄位與 `public.anonymize_old_orders()` 函式（收回 public、anon、authenticated 的執行權限，Worker 的 key 呼叫回傳 403），以 pg_cron 排程 `anonymize-old-orders` 於每天 UTC 19:00（台灣 03:00）執行；以一筆 31 天前的假訂單測試清除成功。隱私權同意文字補上「於下單 30 天後刪除」。EmailJS Email History 與店家 Gmail 的通知信需手動清理（Gmail 搜尋 `subject:新訂單 older_than:30d`）（`945fca7`）
 
+## 收斂階段（2026-09-30）
+
+凍結新功能，只處理以下 4 項（出自學習筆記「技術債與收斂建議」）：
+
+- [ ] S2 帳號兩步驟驗證（見資安檢查）
+- [ ] 資料庫結構整理成 `supabase/schema.sql`
+- [x] 開啟 Workers Logs：`wrangler.jsonc` 加入 `observability`（`enabled: true`、`head_sampling_rate: 1`），正式環境保留請求與 `console` 紀錄（`a5c0692`）
+- [ ] 每週核對 Supabase 訂單與寄信紀錄（例行工作）
+
 ## 未來實作（2026-09-30 決定暫緩）
 
 - [ ] **訂單管理頁**：登入後查看所有訂單、依狀態篩選、更新為已付款／已出貨

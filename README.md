@@ -154,6 +154,7 @@ push 到 `main` 後由 Cloudflare Workers Builds 自動部署（Build：`npm run
 - Build 變數：`VITE_SITE_URL`、`NODE_VERSION=22`
 - Worker secret：上表標為機密的 6 個，用 `npx wrangler secret put <名稱>` 設定；後台設定時類型要選 Secret
 - 確認上線：`npx wrangler deployments list` 顯示新版本，且首頁 JS 換成新檔名
+- 正式環境 log：已開啟 Workers Logs，到 Cloudflare 後台 → Observability 查詢；即時查看用 `npx wrangler tail`
 
 開發過程遇到的問題見 [`docs/bug-log.md`](docs/bug-log.md)。
 
