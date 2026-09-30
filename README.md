@@ -121,13 +121,15 @@ SUPABASE_SECRET_KEY=sb_secret_...
 TURNSTILE_SECRET=
 TURNSTILE_HOSTNAMES=localhost
 EMAILJS_PRIVATE_KEY=
+EMAILJS_CUSTOMER_TEMPLATE_ID=
+EMAILJS_OWNER_TEMPLATE_ID=
 ```
 
 `SUPABASE_SECRET_KEY` 在 Supabase **Project Settings → API Keys → Secret keys** 取得。這把 key 會略過 RLS，只能放在 Worker。
 
 `TURNSTILE_SECRET` 是 Turnstile widget 的 Secret Key；Site Key 為公開值，寫在 `src/components/TurnstileWidget.jsx`。`TURNSTILE_HOSTNAMES` 是允許取得 token 的網址（逗號分隔），正式環境的值寫在 `wrangler.jsonc` 的 `vars`，只包含正式網址，本機由 `.dev.vars` 覆蓋為 `localhost`。Turnstile widget 需登記正式網址與 `localhost` 兩個 hostname。
 
-EmailJS 的 Service ID、兩個 Template ID（顧客確認信、新訂單通知）與 Public Key 為公開值，寫在 `wrangler.jsonc` 的 `vars`；只有 `EMAILJS_PRIVATE_KEY` 是機密。EmailJS 需在 **Account → Security** 開啟非瀏覽器應用程式的 API 存取。信件內容與匯款資訊在 EmailJS 的範本中編輯，不在程式碼裡。
+EmailJS 的 Service ID 與 Public Key 寫在 `wrangler.jsonc` 的 `vars`；`EMAILJS_PRIVATE_KEY` 與兩個 Template ID（`EMAILJS_CUSTOMER_TEMPLATE_ID`、`EMAILJS_OWNER_TEMPLATE_ID`）必須保密，只放在 `.dev.vars` 與 Worker secret。EmailJS 允許瀏覽器端只用 Public Key 寄信，Template ID 一旦公開，任何人都能用店家的 Gmail 寄信，因此不可寫進 repo。EmailJS 需在 **Account → Security** 開啟非瀏覽器應用程式的 API 存取。信件內容與匯款資訊在 EmailJS 的範本中編輯，不在程式碼裡。
 
 ## Supabase 設定
 
@@ -167,7 +169,7 @@ npm run lint      # Oxlint，已開啟 no-undef 檢查未定義變數
 - Build command：`npm run build`
 - Deploy command：`npx wrangler deploy`（讀取 `wrangler.jsonc`）
 - **Build 變數**（Settings → Build → Build Variables and Secrets）：`VITE_SITE_URL`、`NODE_VERSION=22`
-- **Worker secret**（Settings → Variables and Secrets，類型選 Secret）：`SUPABASE_URL`、`SUPABASE_SECRET_KEY`、`TURNSTILE_SECRET`、`EMAILJS_PRIVATE_KEY`。也可以用 `npx wrangler secret put <名稱>` 設定。類型若選 Text，會在下次部署時被 `wrangler.jsonc` 的設定清除
+- **Worker secret**（Settings → Variables and Secrets，類型選 Secret）：`SUPABASE_URL`、`SUPABASE_SECRET_KEY`、`TURNSTILE_SECRET`、`EMAILJS_PRIVATE_KEY`、`EMAILJS_CUSTOMER_TEMPLATE_ID`、`EMAILJS_OWNER_TEMPLATE_ID`。也可以用 `npx wrangler secret put <名稱>` 設定。類型若選 Text，會在下次部署時被 `wrangler.jsonc` 的設定清除
 
 開發與部署過程遇到的問題記錄在 [`docs/bug-log.md`](docs/bug-log.md)。
 
