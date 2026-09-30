@@ -136,14 +136,15 @@ EmailJS 的 Service ID 與 Public Key 寫在 `wrangler.jsonc` 的 `vars`；`EMAI
 `orders` 資料表除了訂單欄位外，需有 `order_number`（text、unique）、`subtotal`、`shipping_fee`、`total`（int4），皆為 not null；以及 `turnstile_token_hash`（text、unique），防止同一個 Turnstile token 重複建立訂單。權限設定：
 
 ```sql
--- Worker 使用的 service_role：可新增、讀取、更新，不可刪除
+-- Worker 使用的 service_role：只能新增、讀取、更新（不可刪除、清空）
 grant select, insert, update on table public.orders to service_role;
+revoke truncate, references, trigger on table public.orders from service_role;
 
--- 訪客（publishable key）不可寫入
-revoke insert on table public.orders from anon;
+-- 訪客與登入者：沒有任何權限（前端不直接連線資料庫）
+revoke all on table public.orders from anon, authenticated;
 ```
 
-RLS 保持開啟且不設定任何 anon policy。
+RLS 保持開啟且不設定任何 policy。前端不使用 Supabase，publishable key 已刪除。
 
 ## 建置與預覽
 
