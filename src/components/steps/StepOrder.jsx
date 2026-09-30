@@ -68,14 +68,14 @@ function StepOrder({
               </div>
             ))}
           </dl>
+
+          {isActive && <TurnstileWidget key={turnstileKey} />}
+
+          {submitError && (
+            <p className="text-caption text-danger">{submitError}</p>
+          )}
         </aside>
       </div>
-
-      {isActive && <TurnstileWidget key={turnstileKey} />}
-
-      {submitError && (
-        <p className="mt-6 text-caption text-danger">{submitError}</p>
-      )}
     </div>
   );
 }

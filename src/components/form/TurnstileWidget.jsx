@@ -32,6 +32,7 @@ function TurnstileWidget() {
         widgetId = turnstile.render(containerRef.current, {
           sitekey: TURNSTILE_SITE_KEY,
           action: "order",
+          size: "flexible",
         });
       })
       .catch((error) => {
@@ -44,7 +45,7 @@ function TurnstileWidget() {
     };
   }, []);
 
-  return <div ref={containerRef} className="mt-6" />;
+  return <div ref={containerRef} className="w-full" />;
 }
 
 export default TurnstileWidget;
