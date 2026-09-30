@@ -35,7 +35,7 @@ function WizardFooter({
           <span />
         )}
 
-        {/* 不同 key 讓「繼續」與「送出」成為不同元素，避免點擊「繼續」後按鈕立即變成 submit 而誤送出表單 */}
+        {/* 不同 key 讓「繼續」與「確認訂單」成為不同元素，避免點擊「繼續」後按鈕立即變成 submit 而誤觸發表單送出 */}
         {isLastStep ? (
           <button
             key="submit"

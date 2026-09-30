@@ -142,7 +142,7 @@ npm run preview    # 本機跑正式版（含安全標頭）
 - RLS 開啟且沒有任何 policy；Worker（service_role）只有 `INSERT`、`SELECT`、`UPDATE`，訪客沒有權限
 - 個資 30 天後由 pg_cron 每天自動清除（台灣 03:00），執行紀錄查 `cron.job_run_details`
 - EmailJS 的 Email History 與店家 Gmail 的通知信需每月手動清理
-- 在後台修改資料庫後，要同步更新 `schema.sql`
+- 在後台修改資料庫後，要同步更新 `supabase/schema.sql`
 
 ## 部署
 
