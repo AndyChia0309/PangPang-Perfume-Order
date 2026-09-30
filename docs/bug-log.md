@@ -155,7 +155,27 @@
 目前顧客關掉成功視窗後就看不到訂單編號，也無法回頭查看自己的訂單。缺口補完後分兩階段進行：
 
 - [~] **H1 我的訂單（本機紀錄）**：2026-09-29 決定不做。網站定位為單純的訂購表單、不做會員，顧客改以 Email 確認信保存訂單資訊（見「自動寄信」）
-- [ ] **H2 訂單查詢**：輸入訂單編號 + Email，由 Worker 查詢 Supabase 回傳訂單內容與最新狀態，跨裝置可用；「我的訂單」的每一筆可直接點進查詢。適合與訂單狀態（匯款回報、出貨）一起完成
+- [ ] **H2 訂單查詢**：輸入訂單編號 + Email，由 Worker 查詢 Supabase 回傳訂單內容與最新狀態，跨裝置可用；「我的訂單」的每一筆可直接點進查詢。適合與訂單狀態（匯款回報、出貨）一起完成。**2026-09-30 列為未來實作**
+
+## 資安檢查（2026-09-30）
+
+針對個資外洩與 API 濫用的檢查。已確認沒有問題的項目：所有機密金鑰（Supabase secret key、Turnstile secret、EmailJS private key）只存在 Worker secret 與 `.dev.vars`，git 歷史中從未出現；訪客無法直接讀寫 Supabase；`/api/orders` 有限流、Turnstile 與 token 唯一值三層防護；正式環境依賴套件沒有已知漏洞。
+
+依優先順序處理：
+
+- [ ] **S1 EmailJS 可被冒用寄信（高）**：Public Key、Service ID、Template ID 都在公開的 repo 中，實測不帶 Private Key 從其他網站呼叫 EmailJS 仍會寄出信件。攻擊者可用店家 Gmail 寄任意內容給任何人（釣魚、垃圾信），並耗盡每月 200 封額度 → 在 EmailJS 強制所有請求都必須帶 Private Key
+- [ ] **S2 帳號安全（高）**：GitHub（公開 repo、push 即部署）、Cloudflare、Supabase、EmailJS、兩個 Gmail 帳號都開啟兩步驟驗證
+- [ ] **S3 錯誤紀錄可能包含個資（中）**：Supabase 寫入失敗時，錯誤內容可能包含整筆訂單資料並被寫入 Worker log → 只記錄狀態碼與錯誤代碼
+- [ ] **S4 確認資料庫權限（中）**：舊的 publishable key 仍然有效且曾公開在前端 → 確認 anon 對 `orders` 沒有任何權限，並停用或輪替 publishable key
+- [ ] **S5 缺少安全標頭（中）**：網站沒有 CSP、`X-Frame-Options`、`X-Content-Type-Options`、`Referrer-Policy` 等標頭 → 以 `_headers` 與 Worker 加上
+- [ ] **S6 開發套件漏洞（低）**：`wrangler`／`miniflare` 使用的 `undici` 有 4 個中度漏洞，只影響本機開發 → `npm audit fix`
+- [ ] **S7 個資保存期限（低）**：訂單個資無限期保存，且資料庫中仍有測試訂單 → 訂定保存期限與清理方式
+
+## 未來實作（2026-09-30 決定暫緩）
+
+- [ ] **訂單管理頁**：登入後查看所有訂單、依狀態篩選、更新為已付款／已出貨
+- [ ] **匯款回報與出貨通知**：顧客在網站輸入訂單編號與帳號末五碼；出貨時寄信通知
+- [ ] **H2 訂單查詢**：以訂單編號 + Email 查詢訂單內容與狀態（見上方「功能規劃：歷史訂單」）
 
 ## 功能規劃：自動寄信
 

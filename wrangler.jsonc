@@ -17,8 +17,6 @@
   "vars": {
     "TURNSTILE_HOSTNAMES": "pangpang-perfume-order.ykk910309.workers.dev",
     "EMAILJS_SERVICE_ID": "service_memoryperfume",
-    "EMAILJS_CUSTOMER_TEMPLATE_ID": "template_eunb6fw",
-    "EMAILJS_OWNER_TEMPLATE_ID": "template_o3uoinw",
     "EMAILJS_PUBLIC_KEY": "8sn_LHF9Lf1WFOyph",
   },
 }
