@@ -176,7 +176,7 @@
 凍結新功能，只處理以下 4 項（出自學習筆記「技術債與收斂建議」）：
 
 - [ ] S2 帳號兩步驟驗證（見資安檢查）
-- [x] 資料庫結構整理成 `supabase/schema.sql`：資料表、權限、個資清除函式與排程，可重複執行；已與正式資料庫的欄位（型別、必填、預設值）與限制（主鍵、兩個 unique）逐項比對一致（本次 commit）
+- [x] 資料庫結構整理成 `supabase/schema.sql`：資料表、權限、個資清除函式與排程，可重複執行；已與正式資料庫的欄位（型別、必填、預設值）與限制（主鍵、兩個 unique）逐項比對一致（`fc13038`）
 - [x] 開啟 Workers Logs：`wrangler.jsonc` 加入 `observability`（`enabled: true`、`head_sampling_rate: 1`），正式環境保留請求與 `console` 紀錄（`a5c0692`）
 - [ ] 每週核對 Supabase 訂單與寄信紀錄（例行工作）
 
