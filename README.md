@@ -6,6 +6,8 @@
 
 > 本網站目前為作品集展示使用，目前暫無正式的交易內容。
 
+![品牌介紹頁](docs/images/StepBrandIntro.jpg)
+
 ## 功能
 
 - 四步驟訂購流程：品牌介紹 → 品牌影片 → 香味介紹 → 訂購表單，底部導覽列附進度條
@@ -16,16 +18,37 @@
 - 個資保存 30 天，到期自動清除，只保留統計資料
 - RWD：手機到大螢幕都能瀏覽
 
+## 畫面
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/StepVideo.jpg" alt="第二步：品牌影片"><br>第二步：品牌影片</td>
+    <td width="50%"><img src="docs/images/StepScent.jpg" alt="第三步：香味介紹與價格"><br>第三步：香味介紹與價格</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/StepOrder.jpg" alt="第四步：訂購表單，右側即時顯示訂單明細與人機驗證"><br>第四步：訂購表單，右側即時顯示明細與人機驗證</td>
+    <td><img src="docs/images/Order_Confirm.jpg" alt="送出前的確認視窗"><br>送出前的確認視窗</td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><img src="docs/images/Order_Completed.jpg" width="50%" alt="訂單完成：顯示訂單編號，確認信已寄出"><br>訂單完成：顯示訂單編號，確認信已寄出</td>
+  </tr>
+</table>
+
+**手機版**
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/images/StepBrandIntro-mob.jpg" alt="手機版：品牌介紹"><br>品牌介紹</td>
+    <td width="33%"><img src="docs/images/Order_Confirm-mob.jpg" alt="手機版：確認視窗"><br>確認視窗</td>
+    <td width="33%"><img src="docs/images/Order_Completed-mob.jpg" alt="手機版：訂單完成"><br>訂單完成</td>
+  </tr>
+</table>
+
+截圖中的訂購資料皆為示範用的假資料。
+
 ## 架構
 
-```text
-瀏覽器 ──FormData──▶ Worker  POST /api/orders ──secret key──▶ Supabase
-                      1 限流：每個 IP 每分鐘 5 次
-                      2 Turnstile 人機驗證，同一個 token 只能建立一筆訂單
-                      3 驗證表單、後端計算金額（與前端共用 shared/）
-                      4 產生訂單編號、寫入資料庫
-                      5 背景寄信（EmailJS + Gmail）
-```
+![系統架構：瀏覽器只跟 Worker 與 Turnstile 溝通，資料庫與寄信的金鑰都只在 Worker](docs/images/architecture.svg)
 
 | 層 | 技術 |
 | --- | --- |
@@ -35,9 +58,25 @@
 | 寄信 | EmailJS + 店家 Gmail |
 | 測試與檢查 | Vitest、Oxlint |
 
-- 前端不連資料庫，訪客對資料庫沒有任何權限
-- 前端驗證是為了使用體驗，後端驗證才是防線；金額一律由後端計算
 - 不需要會員：訂單資訊透過 Email 確認信提供；寄信失敗不影響下單
+
+## 技術亮點
+
+**1. 前後端共用驗證，金額只由後端計算**
+
+表單規則與價格放在 `shared/`，前端送出前與 Worker 寫入前各驗證一次；瀏覽器傳來的金額一律不採用。22 個單元測試涵蓋數量、必填、長度上限與金額計算。
+
+**2. 三層 API 防護，並補上第三方沒做到的部分**
+
+限流（每個 IP 每分鐘 5 次）→ Turnstile 人機驗證 → 同一個 token 只能建立一筆訂單。Turnstile 文件寫 token 只能驗證一次，實測卻能重複通過，所以把 token 的 SHA-256 雜湊存成 unique 欄位，由資料庫擋下重送（[B15](docs/bug-log.md)）。
+
+**3. 實測找出金鑰外洩風險並修正**
+
+資安檢查時實測發現，只用公開在 repo 的 EmailJS Public Key 就能用店家 Gmail 寄信。改為重建範本、Template ID 只存於 Worker secret，並以舊 ID 模擬攻擊確認失效（[S1](docs/improvements.md)）。
+
+**4. 個資最小化**
+
+前端不連資料庫、訪客沒有任何資料庫權限；log 只記錄錯誤代碼；訂單個資 30 天後由 pg_cron 自動清除，只保留統計資料。
 
 ## 專案結構
 
