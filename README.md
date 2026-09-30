@@ -52,6 +52,7 @@ worker/               # 後端：index（路由、限流）、orders、turnstile
 shared/               # 前後端共用：驗證規則、金額計算、價格（含 22 個測試）
 public/_headers       # 安全標頭（CSP 等）
 wrangler.jsonc        # Worker 設定
+supabase/schema.sql   # 資料庫結構、權限、個資清除排程
 docs/bug-log.md       # Bug 紀錄、檢查清單與規劃
 ```
 
@@ -96,56 +97,13 @@ npm run preview    # 本機跑正式版（含安全標頭）
 
 ## 資料庫（Supabase）
 
-`orders` 一張表：訂單欄位之外，`order_number`、`turnstile_token_hash` 為 unique，`subtotal`、`shipping_fee`、`total` 為 not null，`anonymized_at` 記錄個資清除時間。RLS 開啟且沒有任何 policy；Worker（service_role）只有 `INSERT`、`SELECT`、`UPDATE`，訪客沒有權限。
+完整結構在 [`supabase/schema.sql`](supabase/schema.sql)：在新的 Supabase 專案的 SQL Editor 整份執行即可重建，可重複執行。
 
-<details>
-<summary>權限與 30 天個資清除的 SQL</summary>
-
-```sql
--- 權限
-grant select, insert, update on table public.orders to service_role;
-revoke truncate, references, trigger on table public.orders from service_role;
-revoke all on table public.orders from anon, authenticated;
-
--- 30 天後清除個資，保留編號、數量、金額與日期
-alter table public.orders add column anonymized_at timestamptz;
-
-create or replace function public.anonymize_old_orders()
-returns integer
-language sql
-set search_path = ''
-as $$
-  with updated as (
-    update public.orders
-    set customer_name = '（已清除）',
-        phone = '（已清除）',
-        email = '（已清除）',
-        instagram = '',
-        pickup_store_address = '（已清除）',
-        recipient_name = '（已清除）',
-        recipient_phone = '（已清除）',
-        note = '',
-        anonymized_at = now()
-    where created_at < now() - interval '30 days'
-      and anonymized_at is null
-    returning 1
-  )
-  select count(*)::integer from updated;
-$$;
-
-revoke execute on function public.anonymize_old_orders() from public, anon, authenticated;
-
--- 需先開啟 pg_cron；UTC 19:00 = 台灣 03:00
-select cron.schedule(
-  'anonymize-old-orders',
-  '0 19 * * *',
-  $$select public.anonymize_old_orders();$$
-);
-```
-
-</details>
-
-排程執行紀錄查 `cron.job_run_details`。EmailJS 的 Email History 與店家 Gmail 的通知信需每月手動清理。
+- `orders` 一張表；`order_number`、`turnstile_token_hash` 為 unique，金額欄位為 not null
+- RLS 開啟且沒有任何 policy；Worker（service_role）只有 `INSERT`、`SELECT`、`UPDATE`，訪客沒有權限
+- 個資 30 天後由 pg_cron 每天自動清除（台灣 03:00），執行紀錄查 `cron.job_run_details`
+- EmailJS 的 Email History 與店家 Gmail 的通知信需每月手動清理
+- 在後台修改資料庫後，要同步更新 `schema.sql`
 
 ## 部署
 
