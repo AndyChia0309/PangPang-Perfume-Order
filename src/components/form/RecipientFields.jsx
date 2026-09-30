@@ -69,7 +69,7 @@ function RecipientFields() {
           htmlFor="privacy-policy"
           className="cursor-pointer text-caption text-ink-muted"
         >
-          我同意香水夢遊蒐集並使用以上個人資料，僅用於本次訂單處理、出貨與聯繫。
+          我同意香水夢遊蒐集並使用以上個人資料，僅用於本次訂單處理、出貨與聯繫，並於下單 30 天後刪除。
           <RequiredMark />
         </label>
       </div>

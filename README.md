@@ -16,6 +16,7 @@
   3. 香味介紹（前中後調、商品圖）
   4. 訂購表單
 - 訂購表單：訂購人、收件人、收件門市、備註、隱私權同意，必填欄位以 `*` 標示
+- 個資保存 30 天，到期自動清除，只保留訂單統計資料
 - 香水數量選擇（小瓶／大瓶，含自訂數量），即時顯示訂單明細與金額
 - 送出前的確認視窗，送出後顯示訂單編號（例如 `PP260929-7K3QX`）
 - 下單後自動寄出訂單確認信（含匯款資訊）給顧客，並寄新訂單通知給店家
@@ -147,6 +148,45 @@ revoke all on table public.orders from anon, authenticated;
 ```
 
 RLS 保持開啟且不設定任何 policy。前端不使用 Supabase，publishable key 已刪除。
+
+**個資保存期限（30 天）**：訂單建立 30 天後，由 pg_cron 每天自動清除個資（姓名、電話、Email、IG、地址、收件人、備註），保留訂單編號、數量、金額與日期。需新增欄位、建立清除函式並收回執行權限，再開啟 `pg_cron` 擴充功能並建立排程：
+
+```sql
+alter table public.orders add column anonymized_at timestamptz;
+
+create or replace function public.anonymize_old_orders()
+returns integer
+language sql
+set search_path = ''
+as $$
+  with updated as (
+    update public.orders
+    set customer_name = '（已清除）',
+        phone = '（已清除）',
+        email = '（已清除）',
+        instagram = '',
+        pickup_store_address = '（已清除）',
+        recipient_name = '（已清除）',
+        recipient_phone = '（已清除）',
+        note = '',
+        anonymized_at = now()
+    where created_at < now() - interval '30 days'
+      and anonymized_at is null
+    returning 1
+  )
+  select count(*)::integer from updated;
+$$;
+
+revoke execute on function public.anonymize_old_orders() from public, anon, authenticated;
+
+select cron.schedule(
+  'anonymize-old-orders',
+  '0 19 * * *',  -- UTC 19:00 = 台灣 03:00
+  $$select public.anonymize_old_orders();$$
+);
+```
+
+執行記錄可查詢 `cron.job_run_details`。EmailJS 的 Email History 與店家 Gmail 的新訂單通知信需另外手動清理。
 
 ## 建置與預覽
 

@@ -157,7 +157,7 @@
 - [~] **H1 我的訂單（本機紀錄）**：2026-09-29 決定不做。網站定位為單純的訂購表單、不做會員，顧客改以 Email 確認信保存訂單資訊（見「自動寄信」）
 - [ ] **H2 訂單查詢**：輸入訂單編號 + Email，由 Worker 查詢 Supabase 回傳訂單內容與最新狀態，跨裝置可用；「我的訂單」的每一筆可直接點進查詢。適合與訂單狀態（匯款回報、出貨）一起完成。**2026-09-30 列為未來實作**
 
-## 資安檢查（2026-09-30）
+## 資安檢查（2026-09-30，S2 以外已完成）
 
 針對個資外洩與 API 濫用的檢查。已確認沒有問題的項目：所有機密金鑰（Supabase secret key、Turnstile secret、EmailJS private key）只存在 Worker secret 與 `.dev.vars`，git 歷史中從未出現；訪客無法直接讀寫 Supabase；`/api/orders` 有限流、Turnstile 與 token 唯一值三層防護；正式環境依賴套件沒有已知漏洞。
 
@@ -168,8 +168,8 @@
 - [x] **S3 錯誤紀錄可能包含個資（中）**：Supabase 寫入失敗時，錯誤內容可能包含整筆訂單資料並被寫入 Worker log → 只記錄狀態碼與錯誤代碼。**處理結果：** 新增 `summarizeSupabaseError`，log 只保留 Supabase 錯誤的 `code` 與 `message`，丟棄可能含整筆資料的 `details`；無法解析時只記固定文字。以含假個資的錯誤內容測試，輸出不含個資（`278fbf7`）
 - [x] **S4 確認資料庫權限（中）**：舊的 publishable key 仍然有效且曾公開在前端 → 確認 anon 對 `orders` 沒有任何權限，並停用或輪替 publishable key。**處理結果：** 檢查發現 `public` 只有 `orders` 一張表、RLS 已開啟且沒有任何 policy；anon 與 authenticated 已無讀寫權限，但仍有 `REFERENCES`、`TRIGGER`、`TRUNCATE`（TRUNCATE 不受 RLS 限制）。執行 `revoke all on table public.orders from anon, authenticated;` 並收回 service_role 用不到的 `truncate, references, trigger`，只保留 `INSERT, SELECT, UPDATE`；刪除舊的 publishable key。驗證：Worker 的 key 讀寫權限正常，無效或已刪除的 key 回傳 401
 - [x] **S5 缺少安全標頭（中）**：網站沒有 CSP、`X-Frame-Options`、`X-Content-Type-Options`、`Referrer-Policy` 等標頭 → 以 `_headers` 與 Worker 加上。**處理結果：** 新增 `public/_headers`，網頁與靜態檔案加上 CSP（只放行 Turnstile、Google 字型、YouTube）、`X-Frame-Options`、`X-Content-Type-Options`、`Referrer-Policy`、`Permissions-Policy`；`_headers` 不會套用在 Worker 的回應，因此 `worker/index.js` 拆出 `route` 並以 `withSecurityHeaders` 為 API 回應加上 `nosniff` 與 `Cache-Control: no-store`。以 `npm run preview` 驗證標頭，瀏覽器走完四步驟無 CSP 違規，YouTube、字型與 Turnstile 皆正常（`b2e1dcc`）
-- [x] **S6 開發套件漏洞（低）**：`wrangler`／`miniflare` 使用的 `undici` 有 4 個中度漏洞，只影響本機開發 → `npm audit fix`。**處理結果：** 處理時已增加為 3 個中度、1 個高風險（`undici` TLS 憑證驗證可能被繞過）。執行 `npm audit fix`，`wrangler` 4.143.0 → 4.144.0、`@cloudflare/vite-plugin` 1.62.0 → 1.62.2、`undici` 7.29.0 → 7.29.1，`npm audit` 為 0 個漏洞；測試與 build 正常（本次 commit）。之後可定期執行 `npm audit` 檢查
-- [ ] **S7 個資保存期限（低）**：訂單個資無限期保存，且資料庫中仍有測試訂單 → 訂定保存期限與清理方式
+- [x] **S6 開發套件漏洞（低）**：`wrangler`／`miniflare` 使用的 `undici` 有 4 個中度漏洞，只影響本機開發 → `npm audit fix`。**處理結果：** 處理時已增加為 3 個中度、1 個高風險（`undici` TLS 憑證驗證可能被繞過）。執行 `npm audit fix`，`wrangler` 4.143.0 → 4.144.0、`@cloudflare/vite-plugin` 1.62.0 → 1.62.2、`undici` 7.29.0 → 7.29.1，`npm audit` 為 0 個漏洞；測試與 build 正常（`35a0528`）。之後可定期執行 `npm audit` 檢查
+- [x] **S7 個資保存期限（低）**：訂單個資無限期保存，且資料庫中仍有測試訂單 → 訂定保存期限與清理方式。**2026-09-30 決定：** 保存 30 天，到期只清除個資（姓名、電話、Email、IG、地址、收件人、備註），保留訂單編號、數量、金額、日期供統計；以 Supabase pg_cron 每日執行。**處理結果：** 新增 `anonymized_at` 欄位與 `public.anonymize_old_orders()` 函式（收回 public、anon、authenticated 的執行權限，Worker 的 key 呼叫回傳 403），以 pg_cron 排程 `anonymize-old-orders` 於每天 UTC 19:00（台灣 03:00）執行；以一筆 31 天前的假訂單測試清除成功。隱私權同意文字補上「於下單 30 天後刪除」。EmailJS Email History 與店家 Gmail 的通知信需手動清理（Gmail 搜尋 `subject:新訂單 older_than:30d`）（本次 commit）
 
 ## 未來實作（2026-09-30 決定暫緩）
 
