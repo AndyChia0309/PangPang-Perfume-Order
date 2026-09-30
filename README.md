@@ -53,7 +53,7 @@ shared/               # 前後端共用：驗證規則、金額計算、價格�
 public/_headers       # 安全標頭（CSP 等）
 wrangler.jsonc        # Worker 設定
 supabase/schema.sql   # 資料庫結構、權限、個資清除排程
-docs/bug-log.md       # Bug 紀錄、檢查清單與規劃
+docs/                 # bug-log（錯誤紀錄）、improvements（檢查與改善）、roadmap（規劃與需求）
 ```
 
 ## 常見修改
@@ -114,9 +114,11 @@ push 到 `main` 後由 Cloudflare Workers Builds 自動部署（Build：`npm run
 - 確認上線：`npx wrangler deployments list` 顯示新版本，且首頁 JS 換成新檔名
 - 正式環境 log：已開啟 Workers Logs，到 Cloudflare 後台 → Observability 查詢；即時查看用 `npx wrangler tail`
 
-開發過程遇到的問題見 [`docs/bug-log.md`](docs/bug-log.md)。
+開發過程遇到的錯誤見 [`docs/bug-log.md`](docs/bug-log.md)，架構與資安的改善見 [`docs/improvements.md`](docs/improvements.md)，未來規劃見 [`docs/roadmap.md`](docs/roadmap.md)。
 
 ## 未來規劃
+
+詳細的需求與規劃過程見 [`docs/roadmap.md`](docs/roadmap.md)。
 
 - [ ] 訂單查詢：訂單編號 + Email 查詢內容與狀態
 - [ ] 訂單管理頁：登入後篩選、更新訂單狀態
