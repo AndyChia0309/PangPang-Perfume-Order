@@ -165,7 +165,7 @@
 
 - [x] **S1 EmailJS 可被冒用寄信（高）**：Public Key、Service ID、Template ID 都在公開的 repo 中，實測不帶 Private Key 從其他網站呼叫 EmailJS 仍會寄出信件。攻擊者可用店家 Gmail 寄任意內容給任何人（釣魚、垃圾信），並耗盡每月 200 封額度 → 在 EmailJS 強制所有請求都必須帶 Private Key。**處理結果：** EmailJS 的「Use Private Key」只對非瀏覽器請求有效，假冒瀏覽器的請求仍可只用 Public Key 寄信；限制網域為付費功能。改為重建兩個範本取得新的 Template ID，只存於 `.dev.vars` 與 Worker secret（`EMAILJS_CUSTOMER_TEMPLATE_ID`、`EMAILJS_OWNER_TEMPLATE_ID`），不再寫入 `wrangler.jsonc`，並刪除已公開的舊範本。以舊 ID 模擬攻擊回傳 `400 The template ID not found`；正式網站下單兩封信皆正常寄出（`79b5248`）。剩餘風險：新 Template ID 若外洩，同樣可被冒用，需再次重建範本
 - [ ] **S2 帳號安全（高）**：GitHub（公開 repo、push 即部署）、Cloudflare、Supabase、EmailJS、兩個 Gmail 帳號都開啟兩步驟驗證
-- [ ] **S3 錯誤紀錄可能包含個資（中）**：Supabase 寫入失敗時，錯誤內容可能包含整筆訂單資料並被寫入 Worker log → 只記錄狀態碼與錯誤代碼
+- [x] **S3 錯誤紀錄可能包含個資（中）**：Supabase 寫入失敗時，錯誤內容可能包含整筆訂單資料並被寫入 Worker log → 只記錄狀態碼與錯誤代碼。**處理結果：** 新增 `summarizeSupabaseError`，log 只保留 Supabase 錯誤的 `code` 與 `message`，丟棄可能含整筆資料的 `details`；無法解析時只記固定文字。以含假個資的錯誤內容測試，輸出不含個資（本次 commit）
 - [ ] **S4 確認資料庫權限（中）**：舊的 publishable key 仍然有效且曾公開在前端 → 確認 anon 對 `orders` 沒有任何權限，並停用或輪替 publishable key
 - [ ] **S5 缺少安全標頭（中）**：網站沒有 CSP、`X-Frame-Options`、`X-Content-Type-Options`、`Referrer-Policy` 等標頭 → 以 `_headers` 與 Worker 加上
 - [ ] **S6 開發套件漏洞（低）**：`wrangler`／`miniflare` 使用的 `undici` 有 4 個中度漏洞，只影響本機開發 → `npm audit fix`

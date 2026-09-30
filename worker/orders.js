@@ -18,6 +18,15 @@ function createOrderNumber() {
   return `PP${date}-${code}`;
 }
 
+function summarizeSupabaseError(detail) {
+  try {
+    const { code, message } = JSON.parse(detail);
+    return { code, message };
+  } catch {
+    return "（無法解析的錯誤內容）";
+  }
+}
+
 export async function handleCreateOrder(request, env, ctx) {
   let formData;
 
@@ -77,7 +86,12 @@ export async function handleCreateOrder(request, env, ctx) {
       );
     }
 
-    console.error("Supabase 寫入失敗", response.status, detail);
+    console.error(
+      "Supabase 寫入失敗",
+      response.status,
+      summarizeSupabaseError(detail),
+    );
+
     return Response.json(
       { error: "訂單送出失敗，請稍後再試。" },
       { status: 500 },
