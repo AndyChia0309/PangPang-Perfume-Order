@@ -4,7 +4,7 @@ function InstagramContact() {
   return (
     <a
       className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-white transition-colors duration-200 hover:bg-brand-dark"
-      href="https://www.instagram.com/parfum_tournee?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+      href="https://www.instagram.com/parfum_tournee/"
       target="_blank"
       rel="noreferrer"
       aria-label="透過 Instagram 聯繫香水夢遊"
