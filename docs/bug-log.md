@@ -167,7 +167,7 @@
 - [ ] **S2 帳號安全（高）**：GitHub（公開 repo、push 即部署）、Cloudflare、Supabase、EmailJS、兩個 Gmail 帳號都開啟兩步驟驗證
 - [x] **S3 錯誤紀錄可能包含個資（中）**：Supabase 寫入失敗時，錯誤內容可能包含整筆訂單資料並被寫入 Worker log → 只記錄狀態碼與錯誤代碼。**處理結果：** 新增 `summarizeSupabaseError`，log 只保留 Supabase 錯誤的 `code` 與 `message`，丟棄可能含整筆資料的 `details`；無法解析時只記固定文字。以含假個資的錯誤內容測試，輸出不含個資（`278fbf7`）
 - [x] **S4 確認資料庫權限（中）**：舊的 publishable key 仍然有效且曾公開在前端 → 確認 anon 對 `orders` 沒有任何權限，並停用或輪替 publishable key。**處理結果：** 檢查發現 `public` 只有 `orders` 一張表、RLS 已開啟且沒有任何 policy；anon 與 authenticated 已無讀寫權限，但仍有 `REFERENCES`、`TRIGGER`、`TRUNCATE`（TRUNCATE 不受 RLS 限制）。執行 `revoke all on table public.orders from anon, authenticated;` 並收回 service_role 用不到的 `truncate, references, trigger`，只保留 `INSERT, SELECT, UPDATE`；刪除舊的 publishable key。驗證：Worker 的 key 讀寫權限正常，無效或已刪除的 key 回傳 401
-- [ ] **S5 缺少安全標頭（中）**：網站沒有 CSP、`X-Frame-Options`、`X-Content-Type-Options`、`Referrer-Policy` 等標頭 → 以 `_headers` 與 Worker 加上
+- [x] **S5 缺少安全標頭（中）**：網站沒有 CSP、`X-Frame-Options`、`X-Content-Type-Options`、`Referrer-Policy` 等標頭 → 以 `_headers` 與 Worker 加上。**處理結果：** 新增 `public/_headers`，網頁與靜態檔案加上 CSP（只放行 Turnstile、Google 字型、YouTube）、`X-Frame-Options`、`X-Content-Type-Options`、`Referrer-Policy`、`Permissions-Policy`；`_headers` 不會套用在 Worker 的回應，因此 `worker/index.js` 拆出 `route` 並以 `withSecurityHeaders` 為 API 回應加上 `nosniff` 與 `Cache-Control: no-store`。以 `npm run preview` 驗證標頭，瀏覽器走完四步驟無 CSP 違規，YouTube、字型與 Turnstile 皆正常（本次 commit）
 - [ ] **S6 開發套件漏洞（低）**：`wrangler`／`miniflare` 使用的 `undici` 有 4 個中度漏洞，只影響本機開發 → `npm audit fix`
 - [ ] **S7 個資保存期限（低）**：訂單個資無限期保存，且資料庫中仍有測試訂單 → 訂定保存期限與清理方式
 
