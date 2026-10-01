@@ -7,7 +7,7 @@ function InstagramContact() {
       href="https://www.instagram.com/parfum_tournee/"
       target="_blank"
       rel="noreferrer"
-      aria-label="透過 Instagram 聯繫香水夢遊"
+      aria-label="透過 Instagram 聯繫香水夢遊（開啟新分頁）"
       title="若有任何問題都歡迎 IG 聯繫我們"
     >
       <InstagramIcon className="size-5" aria-hidden="true" />

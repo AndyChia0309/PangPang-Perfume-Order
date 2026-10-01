@@ -1,4 +1,5 @@
 import { handleCreateOrder } from "./orders.js";
+import { keepSupabaseAlive } from "./keepAlive.js";
 
 async function route(request, env, ctx) {
   const url = new URL(request.url);
@@ -43,5 +44,9 @@ export default {
   async fetch(request, env, ctx) {
     const response = await route(request, env, ctx);
     return withSecurityHeaders(response);
+  },
+
+  async scheduled(controller, env, ctx) {
+    ctx.waitUntil(keepSupabaseAlive(env));
   },
 };

@@ -87,7 +87,7 @@ src/                  # 前端
 ├── data/             # 品牌故事、商品文案、圖片
 ├── services/         # 呼叫 /api/orders
 └── index.css         # 設計系統（@theme、共用 class）
-worker/               # 後端：index（路由、限流）、orders、turnstile、email
+worker/               # 後端：index（路由、限流、排程）、orders、turnstile、email、keepAlive
 shared/               # 前後端共用：驗證規則、金額計算、價格（含 22 個測試）
 public/_headers       # 安全標頭（CSP 等）
 wrangler.jsonc        # Worker 設定
@@ -141,6 +141,7 @@ npm run preview    # 本機跑正式版（含安全標頭）
 - 只有 `orders` 一張表；`order_number`、`turnstile_token_hash` 是 unique，金額欄位是 not null
 - RLS 開著、沒有任何 policy；Worker（service_role）只有 `INSERT`、`SELECT`、`UPDATE`，訪客什麼權限都沒有
 - pg_cron 每天台灣 03:00 自動清掉超過 30 天的個資，執行紀錄查 `cron.job_run_details`
+- Worker 的 Cron Trigger 每天台灣 09:00 查一次資料庫（`worker/keepAlive.js`），避免免費方案閒置被暫停
 - EmailJS 的 Email History 和店家 Gmail 的通知信每個月要手動清一次
 - 在後台改了資料庫，`supabase/schema.sql` 也要跟著更新
 

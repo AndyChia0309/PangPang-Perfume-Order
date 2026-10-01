@@ -19,6 +19,9 @@
     "EMAILJS_SERVICE_ID": "service_memoryperfume",
     "EMAILJS_PUBLIC_KEY": "8sn_LHF9Lf1WFOyph",
   },
+  "triggers": {
+    "crons": ["0 1 * * *"],
+  },
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1,

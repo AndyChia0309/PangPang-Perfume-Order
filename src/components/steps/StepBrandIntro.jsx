@@ -17,7 +17,7 @@ function StepBrandIntro() {
             <span>{brandStory.notes[1]}</span>
           </p>
         }
-        description="認識我們的品牌故事，再開始這趟訂購旅程。"
+        description="認識我們的品牌故事，再開始這趟奇幻旅程。"
       />
 
       <img

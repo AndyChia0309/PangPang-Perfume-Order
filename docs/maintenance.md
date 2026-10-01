@@ -7,8 +7,8 @@
 | 頻率 | 要做的事 | 在哪裡 |
 | --- | --- | --- |
 | 每週 | 對帳：資料庫的新訂單數量跟店家 Gmail 的「新訂單通知」對得起來 | Supabase → Table Editor → `orders`；店家 Gmail |
-| 每週 | 看有沒有錯誤 log（`Supabase 寫入失敗`、`寄信失敗`、`Turnstile 驗證失敗`） | Cloudflare → Workers → `pangpang-perfume-order` → Observability |
-| 每週 | Supabase 專案有沒有被暫停（免費方案閒置大約一週會暫停，暫停時下單會失敗） | Supabase 後台首頁；收到暫停通知信就按 Restore |
+| 每週 | 看有沒有錯誤 log（`Supabase 寫入失敗`、`寄信失敗`、`Turnstile 驗證失敗`、`Supabase keep-alive 失敗`） | Cloudflare → Workers → `pangpang-perfume-order` → Observability |
+| 每週 | 確認 keep-alive 排程每天都有跑（log 搜 `keep-alive`）。Supabase 免費方案閒置大約一週會暫停，Worker 每天台灣 09:00 查一次資料庫避免暫停；萬一還是收到暫停通知信，就到後台按 Restore | Cloudflare → Workers → `pangpang-perfume-order` → Observability |
 | 每月 | 清個資的排程有沒有正常跑（見下方 SQL） | Supabase → SQL Editor |
 | 每月 | 清掉 EmailJS 的 Email History 和店家 Gmail 的通知信（裡面有個資） | EmailJS → Email History；店家 Gmail |
 | 每月 | 看 EmailJS 這個月寄了幾封（免費方案大約 200 封，一筆訂單 2 封） | EmailJS → Dashboard |
